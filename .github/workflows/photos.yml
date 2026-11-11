@@ -1,0 +1,29 @@
+name: Fetch case photos
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - photos/sources.json
+      - scripts/fetch_photos.py
+      - .github/workflows/photos.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download photos from Wikimedia Commons
+        run: python3 scripts/fetch_photos.py
+      - name: Commit photos and credits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add photos CREDITS.md
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Fetch case photos from Wikimedia Commons"
+          git push

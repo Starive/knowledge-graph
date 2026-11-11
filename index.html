@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Prototype Graph Editor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style id="css">
+/* Layout: full-height editor. Toolbar band on top; a white artboard (the print figure, paper-white in both themes) on a workspace canvas; inspector column on the right that stacks under the canvas on phones. */
+:root {
+  --bg: #e8ebef;
+  --surface: #ffffff;
+  --surface-2: #f3f5f7;
+  --ink: #1a1e23;
+  --ink-2: #59626e;
+  --line: #d5dae0;
+  --accent: #5a44c8;
+  --accent-soft: #ece9fb;
+  --danger: #b4232c;
+  --warn: #c7771f;
+  --f-ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121519; --surface: #1b1f25; --surface-2: #242a32; --ink: #e5e8ec; --ink-2: #9aa3ae; --line: #303740;
+    --accent: #a594ff; --accent-soft: #2a2647; --danger: #ff7c83; --warn: #f0a24e; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121519; --surface: #1b1f25; --surface-2: #242a32; --ink: #e5e8ec; --ink-2: #9aa3ae; --line: #303740;
+  --accent: #a594ff; --accent-soft: #2a2647; --danger: #ff7c83; --warn: #f0a24e; color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html { box-sizing: border-box; height: 100%; }
+*, *::before, *::after { box-sizing: inherit; }
+body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 14px; }
+#root { height: 100%; display: flex; flex-direction: column; }
+.bar { background: var(--surface); border-bottom: 1px solid var(--line); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 8px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.brand { font-weight: 600; font-size: 15px; letter-spacing: -.01em; white-space: nowrap; margin-right: 4px; }
+.grp { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.grp-label { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-2); margin-right: 2px; }
+.sep { width: 1px; align-self: stretch; background: var(--line); }
+button, .btn { font: inherit; font-size: 13px; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; min-height: 30px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; line-height: 1.2; white-space: nowrap; }
+button:hover, .btn:hover { border-color: var(--ink-2); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .btn:focus-within { outline: 2px solid var(--accent); outline-offset: 1px; }
+button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+button.primary { background: var(--ink); border-color: var(--ink); color: var(--surface); font-weight: 600; }
+button.danger { color: var(--danger); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+kbd { font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--surface-2); }
+.status { margin-left: auto; font-size: 12.5px; color: var(--ink-2); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.status.dirty::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--warn); }
+main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
+.stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+#cv { width: 100%; height: 100%; display: block; touch-action: none; user-select: none; -webkit-user-select: none; background: var(--bg); }
+#cv.panning { cursor: grabbing; }
+#cv.connect, #cv.connect .nd { cursor: crosshair; }
+#cv .nd, #cv [data-legend] { cursor: move; }
+#cv .hit { stroke: transparent; stroke-width: 18; fill: none; pointer-events: stroke; cursor: pointer; }
+#cv [data-e] { cursor: pointer; }
+.ov { pointer-events: none; }
+.ov .sel { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.ov .sel-e { fill: none; stroke: var(--accent); stroke-width: 3; stroke-dasharray: 9 6; }
+.ov .src { fill: none; stroke: var(--accent); stroke-width: 4; }
+.ov .pre { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 5 5; }
+.ov .drop { fill: var(--accent); fill-opacity: .15; stroke: var(--accent); stroke-width: 4; }
+.ov .marq { fill: var(--accent); fill-opacity: .08; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.board { filter: drop-shadow(0 1px 3px rgba(0, 0, 0, .18)); }
+.zoom { position: absolute; left: calc(12px + env(safe-area-inset-left, 0px)); bottom: 12px; display: flex; gap: 4px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 4px; }
+.zoom output { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); min-width: 46px; text-align: center; }
+.hint { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); max-width: calc(100% - 32px); background: var(--ink); color: var(--surface); font-size: 12.5px; padding: 7px 14px; border-radius: 999px; pointer-events: none; text-align: center; }
+aside.panel { background: var(--surface); border-left: 1px solid var(--line); overflow-y: auto; min-width: 0; padding: 16px max(16px, env(safe-area-inset-right, 0px)) 24px 16px; display: flex; flex-direction: column; gap: 18px; }
+.sec { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.sec + .sec { border-top: 1px solid var(--line); padding-top: 16px; }
+.kicker { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-2); font-weight: 500; }
+.panel h2 { font-size: 17px; margin: 0; font-weight: 600; text-wrap: balance; overflow-wrap: anywhere; }
+.panel h3 { font-size: 12px; margin: 0; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--ink-2); }
+.field > span.v { font-family: var(--f-mono); color: var(--ink); }
+.field .lab { display: flex; justify-content: space-between; gap: 8px; }
+input[type="text"], input[type="number"], select, textarea { font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; min-width: 0; }
+textarea { resize: vertical; line-height: 1.35; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.mono { font-family: var(--f-mono); }
+.chk { display: flex; gap: 8px; align-items: center; font-size: 13.5px; color: var(--ink); cursor: pointer; }
+.chk input { accent-color: var(--accent); width: 16px; height: 16px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.btnrow { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { font-size: 12.5px; min-height: 26px; padding: 3px 9px; border-radius: 999px; white-space: normal; text-align: left; }
+.chips button small { color: var(--ink-2); font-family: var(--f-mono); }
+.list { display: flex; flex-direction: column; gap: 4px; }
+.list button { justify-content: flex-start; text-align: left; white-space: normal; font-size: 13px; }
+.list .cmd { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); }
+.thumb { width: 112px; height: 112px; border-radius: 50%; border: 2px solid var(--line); overflow: hidden; display: grid; place-items: center; background: var(--surface-2); color: var(--ink-2); font-size: 12px; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; max-width: none; }
+.imgrow { display: flex; gap: 14px; align-items: center; }
+.imgrow .btnrow { flex-direction: column; align-items: flex-start; }
+.note { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; margin: 0; }
+.meta { font-size: 13px; color: var(--ink-2); margin: 0; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.stats div { background: var(--surface-2); border-radius: 6px; padding: 8px 10px; }
+.stats dt { font-size: 11.5px; color: var(--ink-2); }
+.stats dd { margin: 2px 0 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tips { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 1.45; }
+.links a { color: var(--accent); font-size: 13px; }
+.tray { display: flex; flex-direction: column; gap: 8px; }
+.trow { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.trow img { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; max-width: none; }
+.trow .fname { font-size: 12px; color: var(--ink-2); overflow-wrap: anywhere; }
+.tcol { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--surface); padding: 9px 16px; border-radius: 8px; font-size: 13.5px; max-width: calc(100% - 32px); box-shadow: 0 6px 20px rgba(0, 0, 0, .25); z-index: 20; }
+@media (max-width: 820px) {
+  html, body, #root { height: auto; }
+  main { display: block; }
+  .stage { height: 62vh; }
+  aside.panel { border-left: 0; border-top: 1px solid var(--line); padding: 16px max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px)); }
+  .status { margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) { button { transition: border-color .12s, background-color .12s; } }
+</style>
+
+<div id="root">
+  <header class="bar">
+    <span class="brand">Prototype Graph Editor</span>
+    <div class="grp" role="group" aria-label="Tool">
+      <button id="b-select" data-act="mode-select" aria-pressed="true" title="Select and move (V)">Select</button>
+      <button id="b-connect" data-act="mode-connect" aria-pressed="false" title="Draw a link between two circles (C)">Connect</button>
+    </div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="grp" role="group" aria-label="Add">
+      <span class="grp-label">Add</span>
+      <button data-act="add-proto">Prototype</button>
+      <button data-act="add-ib">In-Between</button>
+      <button data-act="add-case">Built case</button>
+      <label class="btn" title="Choose many photos at once. Each one goes to the case whose name is in its file name."><input id="f-photos" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>Photos…</label>
+    </div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="grp" role="group" aria-label="History">
+      <button id="b-undo" data-act="undo" title="Undo (Ctrl/⌘ Z)" disabled>Undo</button>
+      <button id="b-redo" data-act="redo" title="Redo (Ctrl/⌘ Shift Z)" disabled>Redo</button>
+    </div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="grp" role="group" aria-label="Export">
+      <span class="grp-label">Export</span>
+      <button data-act="export-png">PNG</button>
+      <button data-act="export-svg">SVG</button>
+      <button data-act="export-json">JSON</button>
+      <label class="btn" title="Load a graph exported as JSON"><input id="f-import" type="file" accept="application/json,.json" hidden>Import</label>
+    </div>
+    <span id="status" class="status">Saved version</span>
+    <button id="b-save" class="primary" data-act="save" disabled title="Saving works on the published page">Save version</button>
+  </header>
+  <main>
+    <div class="stage" id="stage">
+      <svg id="cv" class="fg" aria-label="Knowledge graph canvas"></svg>
+      <div id="hint" class="hint" hidden>Click the start circle, then the end circle. Press Esc to finish.</div>
+      <div class="zoom">
+        <button data-act="zoom-out" aria-label="Zoom out">−</button>
+        <output id="zoomv">100%</output>
+        <button data-act="zoom-in" aria-label="Zoom in">+</button>
+        <button data-act="zoom-fit" title="Fit the figure in view (F)">Fit</button>
+      </div>
+    </div>
+    <aside class="panel" id="panel" aria-label="Inspector"></aside>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</div>
+<script type="application/json" id="graph-data">{"v":1,"savedAt":"","board":{"w":2180,"h":1460},"legend":{"x":1905,"y":330,"show":true},"opts":{"captions":true,"snap":false,"pngScale":2},"nodes":[{"id":"CB","t":"adj","x":634,"y":857,"r":40,"glyph":"CB","label":"Cable"},{"id":"PC","t":"adj","x":682,"y":985,"r":40,"glyph":"PC","label":"Parabolic\nCable"},{"id":"CT","t":"adj","x":884,"y":970,"r":40,"glyph":"CT","label":"Gable\ntruss"},{"id":"PA","t":"adj","x":1297,"y":808,"r":40,"glyph":"PA","label":"Parabolic\nArch"},{"id":"AR","t":"adj","x":1168,"y":594,"r":40,"glyph":"AR","label":"Arch"},{"id":"FR","t":"adj","x":983,"y":431,"r":40,"glyph":"FR","label":"Frame"},{"id":"TR","t":"adj","x":753,"y":519,"r":40,"glyph":"TR","label":"Truss"},{"id":"BM","t":"adj","x":634,"y":603,"r":40,"glyph":"BM","label":"Beams"},{"id":"AC","t":"core","x":905,"y":730,"r":58,"glyph":"AC","label":"Arch-cable"},{"id":"TC","t":"orig","x":579,"y":778,"r":42,"glyph":"TC","label":"Triangular\nCable"},{"id":"TA","t":"orig","x":579,"y":682,"r":42,"glyph":"TA","label":"Triangular\nArch"},{"id":"ib1","t":"ib","x":337,"y":511,"r":35,"glyph":"nng","label":"Beam grillage","cap":false},{"id":"cs1","t":"case","x":147,"y":438,"r":49,"label":"Neue\nNational-\ngalerie","name":"Neue Nationalgalerie","year":"1968","meta":"Berlin · 1968 · Mies van der Rohe","alts":[{"name":"Farnsworth House","year":"1951","meta":"Plano, Illinois · 1951 · Mies van der Rohe"},{"name":"Kimbell Art Museum","year":"1972","meta":"Fort Worth · 1972 · Louis Kahn, August Komendant"},{"name":"Confederation Bridge","year":"1997","meta":"Canada · 1997"},{"name":"Hong Kong–Zhuhai–Macau Bridge","year":"2018","meta":"Pearl River Delta · 2018"}]},{"id":"ib2","t":"ib","x":395,"y":441,"r":35,"glyph":"pudong","label":"Beam string","cap":false},{"id":"cs2","t":"case","x":225,"y":345,"r":49,"label":"Shanghai\nPudong\nAirport T1","name":"Shanghai Pudong Airport T1","year":"1999","meta":"Shanghai · 1999 · Paul Andreu","alts":[]},{"id":"ib3","t":"ib","x":468,"y":380,"r":35,"glyph":"bio","label":"Spatial truss dome","cap":false},{"id":"cs3","t":"case","x":323,"y":263,"r":49,"label":"Montreal\nBiosphère","name":"Montreal Biosphère","year":"1967","meta":"Montreal · 1967 · R. Buckminster Fuller","alts":[{"name":"Eden Project biomes","year":"2001","meta":"Cornwall · 2001 · Grimshaw, Anthony Hunt Associates"},{"name":"Javits Center","year":"1986","meta":"New York · 1986 · I. M. Pei & Partners"},{"name":"Spaceship Earth","year":"1982","meta":"Florida · 1982 · Epcot"},{"name":"Beijing National Stadium","year":"2008","meta":"Beijing · 2008 · Herzog & de Meuron, Arup, CAG"}]},{"id":"ib4","t":"ib","x":555,"y":329,"r":35,"glyph":"eiffel","label":"Tapered truss tower","cap":false},{"id":"cs4","t":"case","x":438,"y":195,"r":49,"label":"Eiffel\nTower","name":"Eiffel Tower","year":"1889","meta":"Paris · 1889 · Gustave Eiffel, Koechlin & Nouguier","alts":[{"name":"Forth Bridge","year":"1890","meta":"Scotland · 1890 · Fowler & Baker"},{"name":"Quebec Bridge","year":"1917","meta":"Quebec City · 1917"},{"name":"Centre Pompidou","year":"1977","meta":"Paris · 1977 · Piano & Rogers, Arup"}]},{"id":"ib5","t":"ib","x":651,"y":290,"r":35,"glyph":"gherkin","label":"Diagrid","cap":false},{"id":"cs5","t":"case","x":567,"y":143,"r":49,"label":"30 St\nMary Axe","name":"30 St Mary Axe","year":"2004","meta":"London · 2004 · Foster + Partners, Arup","alts":[{"name":"Hearst Tower","year":"2006","meta":"New York · 2006 · Foster + Partners"},{"name":"Seattle Central Library","year":"2004","meta":"Seattle · 2004 · OMA"},{"name":"Guangzhou International Finance Center","year":"2010","meta":"Guangzhou · 2010 · Wilkinson Eyre, Arup"},{"name":"Capital Gate","year":"2011","meta":"Abu Dhabi · 2011 · RMJM"}]},{"id":"ib6","t":"ib","x":755,"y":263,"r":35,"glyph":"boc","label":"Space megatruss","cap":false},{"id":"cs6","t":"case","x":705,"y":108,"r":49,"label":"Bank of\nChina Tower","name":"Bank of China Tower","year":"1990","meta":"Hong Kong · 1990 · I. M. Pei, Leslie E. Robertson","alts":[]},{"id":"ib7","t":"ib","x":864,"y":251,"r":35,"glyph":"crown","label":"Portal frame","cap":false},{"id":"cs7","t":"case","x":850,"y":91,"r":49,"label":"S. R.\nCrown Hall","name":"S. R. Crown Hall","year":"1956","meta":"Chicago · 1956 · Mies van der Rohe","alts":[{"name":"Sainsbury Centre","year":"1978","meta":"Norwich · 1978 · Foster Associates, Anthony Hunt"},{"name":"Galerie des machines","year":"1889 (demolished 1910)","meta":"Paris · 1889 (demolished 1910) · Dutert & Contamin"},{"name":"Grande Arche","year":"1989","meta":"La Défense, Paris · 1989 · Johan Otto von Spreckelsen"},{"name":"Lingotto","year":"1923","meta":"Turin · 1923 · Giacomo Mattè-Trucco"}]},{"id":"ib8","t":"ib","x":974,"y":253,"r":35,"glyph":"sendai","label":"Tube-and-plate frame","cap":false},{"id":"cs8","t":"case","x":996,"y":94,"r":49,"label":"Sendai\nMedia-\ntheque","name":"Sendai Mediatheque","year":"2001","meta":"Sendai · 2001 · Toyo Ito, Mutsuro Sasaki","alts":[{"name":"Yamanashi Press and Broadcasting Centre","year":"1966","meta":"Kofu · 1966 · Kenzo Tange"}]},{"id":"ib9","t":"ib","x":1081,"y":269,"r":35,"glyph":"cctv","label":"Looped tube frame","cap":false},{"id":"cs9","t":"case","x":1140,"y":115,"r":49,"label":"CCTV\nHead-\nquarters","name":"CCTV Headquarters","year":"2012","meta":"Beijing · 2012 · OMA, Arup","alts":[]},{"id":"ib10","t":"ib","x":1184,"y":298,"r":35,"glyph":"habitat","label":"Stacked module frame","cap":false},{"id":"cs10","t":"case","x":1277,"y":154,"r":49,"label":"Habitat\n67","name":"Habitat 67","year":"1967","meta":"Montreal · 1967 · Moshe Safdie","alts":[{"name":"The Interlace","year":"2013","meta":"Singapore · 2013 · OMA / Ole Scheeren"},{"name":"Linked Hybrid","year":"2009","meta":"Beijing · 2009 · Steven Holl"}]},{"id":"ib11","t":"ib","x":1278,"y":340,"r":35,"glyph":"gard","label":"Multi-tier arcade","cap":false},{"id":"cs11","t":"case","x":1402,"y":211,"r":49,"label":"Pont\ndu Gard","name":"Pont du Gard","year":"1st c. AD","meta":"Nîmes, France · 1st century AD","alts":[{"name":"Zhaozhou Bridge","year":"c. 605 AD","meta":"Hebei · c. 605 AD · Li Chun"}]},{"id":"ib12","t":"ib","x":1361,"y":394,"r":35,"glyph":"sydney","label":"Trussed arch","cap":false},{"id":"cs12","t":"case","x":1513,"y":282,"r":49,"label":"Sydney\nHarbour\nBridge","name":"Sydney Harbour Bridge","year":"1932","meta":"Sydney · 1932 · Ralph Freeman, Dorman Long","alts":[{"name":"New River Gorge Bridge","year":"1977","meta":"West Virginia · 1977"},{"name":"Chaotianmen Bridge","year":"2009","meta":"Chongqing · 2009"},{"name":"Salginatobel Bridge","year":"1930","meta":"Switzerland · 1930 · Robert Maillart"}]},{"id":"ib13","t":"ib","x":1431,"y":458,"r":35,"glyph":"palaz","label":"Ribbed dome","cap":false},{"id":"cs13","t":"case","x":1606,"y":367,"r":49,"label":"Palazzetto\ndello Sport","name":"Palazzetto dello Sport","year":"1957","meta":"Rome · 1957 · Pier Luigi Nervi","alts":[]},{"id":"ib14","t":"ib","x":1485,"y":530,"r":35,"glyph":"kresge","label":"Thin shell dome","cap":false},{"id":"cs14","t":"case","x":1679,"y":463,"r":49,"label":"Kresge\nAuditorium","name":"Kresge Auditorium","year":"1955","meta":"MIT, Cambridge · 1955 · Eero Saarinen, Ammann & Whitney","alts":[]},{"id":"ib15","t":"ib","x":1522,"y":607,"r":35,"glyph":"mana","label":"Hypar shell","cap":false},{"id":"cs15","t":"case","x":1728,"y":567,"r":49,"label":"Los\nManantiales","name":"Los Manantiales","year":"1958","meta":"Xochimilco, Mexico City · 1958 · Félix Candela","alts":[]},{"id":"ib16","t":"ib","x":1541,"y":689,"r":35,"glyph":"gateway","label":"Catenary arch","cap":false},{"id":"cs16","t":"case","x":1753,"y":675,"r":49,"label":"Gateway\nArch","name":"Gateway Arch","year":"1965","meta":"St. Louis · 1965 · Eero Saarinen, Hannskarl Bandel","alts":[{"name":"Gateshead Millennium Bridge","year":"2001","meta":"Gateshead · 2001 · Wilkinson Eyre, Gifford"}]},{"id":"ib17","t":"ib","x":1541,"y":771,"r":35,"glyph":"mila","label":"Catenary arcade","cap":false},{"id":"cs17","t":"case","x":1753,"y":785,"r":49,"label":"Casa Milà\nattic","name":"Casa Milà attic","year":"1912","meta":"Barcelona · 1912 · Antoni Gaudí","alts":[]},{"id":"ib18","t":"ib","x":1522,"y":853,"r":35,"glyph":"armadillo","label":"Funicular vault","cap":false},{"id":"cs18","t":"case","x":1728,"y":893,"r":49,"label":"Armadillo\nVault","name":"Armadillo Vault","year":"2016","meta":"Venice Biennale · 2016 · Block Research Group, ETH Zürich","alts":[{"name":"Mapungubwe Interpretation Centre","year":"2009","meta":"Limpopo, South Africa · 2009 · Peter Rich, John Ochsendorf, Michael Ramage"},{"name":"Church of Atlántida","year":"1960","meta":"Uruguay · 1960 · Eladio Dieste"}]},{"id":"ib19","t":"ib","x":1485,"y":930,"r":35,"glyph":"sagrada","label":"Branching column","cap":false},{"id":"cs19","t":"case","x":1679,"y":997,"r":49,"label":"Sagrada\nFamília","name":"Sagrada Família","year":"1882–","meta":"Barcelona · 1882–present · Antoni Gaudí","alts":[{"name":"Church of Colònia Güell","year":"1908–14","meta":"Santa Coloma de Cervelló · 1908–14 · Antoni Gaudí"}]},{"id":"ib20","t":"ib","x":1431,"y":1002,"r":35,"glyph":"multi","label":"Funicular gridshell","cap":false},{"id":"cs20","t":"case","x":1606,"y":1093,"r":49,"label":"Multihalle\nMannheim","name":"Multihalle Mannheim","year":"1975","meta":"Mannheim · 1975 · Frei Otto, Carlfried Mutschler, Arup","alts":[]},{"id":"ib21","t":"ib","x":1361,"y":1066,"r":35,"glyph":"infinity","label":"Tied arch","cap":false},{"id":"cs21","t":"case","x":1513,"y":1178,"r":49,"label":"Infinity\nBridge","name":"Infinity Bridge","year":"2009","meta":"Stockton-on-Tees · 2009 · Expedition Engineering","alts":[{"name":"Lupu Bridge","year":"2003","meta":"Shanghai · 2003"},{"name":"Fehmarnsund Bridge","year":"1963","meta":"Germany · 1963"}]},{"id":"ib22","t":"ib","x":1278,"y":1120,"r":35,"glyph":"dorton","label":"Arch-supported net","cap":false},{"id":"cs22","t":"case","x":1402,"y":1249,"r":49,"label":"J. S. Dorton\nArena","name":"J. S. Dorton Arena","year":"1952","meta":"Raleigh · 1952 · Matthew Nowicki, Fred Severud","alts":[{"name":"Ingalls Rink","year":"1958","meta":"Yale, New Haven · 1958 · Eero Saarinen, Fred Severud"}]},{"id":"ib23","t":"ib","x":1184,"y":1162,"r":35,"glyph":"seoul","label":"Cable dome","cap":false},{"id":"cs23","t":"case","x":1277,"y":1306,"r":49,"label":"Seoul Olympic\nGymnastics\nArena","name":"Seoul Olympic Gymnastics Arena","year":"1988","meta":"Seoul · 1988 · David Geiger","alts":[{"name":"Georgia Dome","year":"1992 (demolished 2017)","meta":"Atlanta · 1992 (demolished 2017) · Weidlinger Associates"}]},{"id":"ib24","t":"ib","x":1081,"y":1191,"r":35,"glyph":"needle","label":"Tensegrity tower","cap":false},{"id":"cs24","t":"case","x":1140,"y":1345,"r":49,"label":"Needle\nTower","name":"Needle Tower","year":"1968","meta":"Washington, DC · 1968 · Kenneth Snelson","alts":[{"name":"Kurilpa Bridge","year":"2009","meta":"Brisbane · 2009 · Cox Rayner, Arup"},{"name":"Skylon","year":"1951 (removed 1952)","meta":"London · 1951 (removed 1952) · Powell & Moya, Felix Samuely"}]},{"id":"ib25","t":"ib","x":974,"y":1207,"r":35,"glyph":"utica","label":"Double-cable truss","cap":false},{"id":"cs25","t":"case","x":996,"y":1366,"r":49,"label":"Utica\nMemorial\nAuditorium","name":"Utica Memorial Auditorium","year":"1959","meta":"Utica, NY · 1959 · Lev Zetlin, Gilbert Seltzer","alts":[]},{"id":"ib26","t":"ib","x":864,"y":1209,"r":35,"glyph":"munich","label":"Anticlastic cable net","cap":false},{"id":"cs26","t":"case","x":850,"y":1369,"r":49,"label":"Munich\nOlympic\nStadium","name":"Munich Olympic Stadium","year":"1972","meta":"Munich · 1972 · Behnisch, Frei Otto, Leonhardt + Andrä","alts":[{"name":"National Speed Skating Oval","year":"2021","meta":"Beijing · 2021"}]},{"id":"ib27","t":"ib","x":755,"y":1197,"r":35,"glyph":"spoke","label":"Spoke wheel","cap":false},{"id":"cs27","t":"case","x":705,"y":1352,"r":49,"label":"Gottlieb-\nDaimler\nStadion","name":"Gottlieb-Daimler-Stadion roof","year":"1993","meta":"Stuttgart · 1993 · Schlaich Bergermann","alts":[{"name":"Madison Square Garden","year":"1968","meta":"New York · 1968"}]},{"id":"ib28","t":"ib","x":651,"y":1170,"r":35,"glyph":"gg","label":"Suspension span","cap":false},{"id":"cs28","t":"case","x":567,"y":1317,"r":49,"label":"Golden Gate\nBridge","name":"Golden Gate Bridge","year":"1937","meta":"San Francisco · 1937 · Joseph Strauss, Charles Ellis","alts":[{"name":"Tsing Ma Bridge","year":"1997","meta":"Hong Kong · 1997"},{"name":"Akashi Kaikyō Bridge","year":"1998","meta":"Kobe · 1998"}]},{"id":"ib29","t":"ib","x":555,"y":1131,"r":35,"glyph":"yoyogi","label":"Suspended roof","cap":false},{"id":"cs29","t":"case","x":438,"y":1265,"r":49,"label":"Yoyogi\nNational\nGymnasium","name":"Yoyogi National Gymnasium","year":"1964","meta":"Tokyo · 1964 · Kenzo Tange, Yoshikatsu Tsuboi","alts":[{"name":"Dulles Airport Main Terminal","year":"1962","meta":"Virginia · 1962 · Eero Saarinen, Ammann & Whitney"}]},{"id":"ib30","t":"ib","x":468,"y":1080,"r":35,"glyph":"pav","label":"Hanging canopy","cap":false},{"id":"cs30","t":"case","x":323,"y":1197,"r":49,"label":"Pavilhão\nde Portugal","name":"Pavilhão de Portugal","year":"1998","meta":"Lisbon · 1998 · Álvaro Siza, Segadães Tavares","alts":[]},{"id":"ib31","t":"ib","x":395,"y":1019,"r":35,"glyph":"millau","label":"Cable-stayed fan","cap":false},{"id":"cs31","t":"case","x":225,"y":1115,"r":49,"label":"Millau\nViaduct","name":"Millau Viaduct","year":"2004","meta":"France · 2004 · Michel Virlogeux, Foster + Partners","alts":[{"name":"Puente del Alamillo","year":"1992","meta":"Seville · 1992 · Santiago Calatrava"},{"name":"Stonecutters Bridge","year":"2009","meta":"Hong Kong · 2009"},{"name":"Ting Kau Bridge","year":"1998","meta":"Hong Kong · 1998 · Schlaich Bergermann"},{"name":"Sutong Bridge","year":"2008","meta":"Jiangsu · 2008"},{"name":"Sundial Bridge","year":"2004","meta":"Redding, California · 2004 · Santiago Calatrava"}]},{"id":"ib32","t":"ib","x":337,"y":949,"r":35,"glyph":"hsbc","label":"Hung floors","cap":false},{"id":"cs32","t":"case","x":147,"y":1022,"r":49,"label":"HSBC Main\nBuilding","name":"HSBC Main Building","year":"1985","meta":"Hong Kong · 1985 · Foster Associates, Arup","alts":[]}],"edges":[{"id":"e1","a":"BM","b":"ib1","k":"tr","l":"array grid","ar":"none","bend":0,"lp":0.55},{"id":"e2","a":"ib1","b":"cs1","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e3","a":"BM","b":"ib2","k":"tr","l":"add struts","ar":"none","bend":0,"lp":0.55},{"id":"e4","a":"ib2","b":"cs2","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e5","a":"TR","b":"ib3","k":"tr","l":"rotate radial","ar":"none","bend":0,"lp":0.55},{"id":"e6","a":"ib3","b":"cs3","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e7","a":"TR","b":"ib4","k":"tr","l":"rotate 90° + taper","ar":"none","bend":0,"lp":0.55},{"id":"e8","a":"ib4","b":"cs4","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e9","a":"TR","b":"ib5","k":"tr","l":"rotate 90° + wrap","ar":"none","bend":0,"lp":0.55},{"id":"e10","a":"ib5","b":"cs5","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e11","a":"TR","b":"ib6","k":"tr","l":"array 3D","ar":"none","bend":0,"lp":0.55},{"id":"e12","a":"ib6","b":"cs6","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e13","a":"FR","b":"ib7","k":"tr","l":"array portals","ar":"none","bend":0,"lp":0.55},{"id":"e14","a":"ib7","b":"cs7","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e15","a":"FR","b":"ib8","k":"tr","l":"rotate (tube)","ar":"none","bend":0,"lp":0.55},{"id":"e16","a":"ib8","b":"cs8","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e17","a":"FR","b":"ib9","k":"tr","l":"loop","ar":"none","bend":0,"lp":0.55},{"id":"e18","a":"ib9","b":"cs9","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e19","a":"FR","b":"ib10","k":"tr","l":"stack 3D","ar":"none","bend":0,"lp":0.55},{"id":"e20","a":"ib10","b":"cs10","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e21","a":"AR","b":"ib11","k":"tr","l":"array tiers","ar":"none","bend":0,"lp":0.55},{"id":"e22","a":"ib11","b":"cs11","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e23","a":"AR","b":"ib12","k":"tr","l":"add truss","ar":"none","bend":0,"lp":0.55},{"id":"e24","a":"ib12","b":"cs12","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e25","a":"AR","b":"ib13","k":"tr","l":"rotate radial","ar":"none","bend":0,"lp":0.55},{"id":"e26","a":"ib13","b":"cs13","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e27","a":"AR","b":"ib14","k":"tr","l":"rotate + trim","ar":"none","bend":0,"lp":0.55},{"id":"e28","a":"ib14","b":"cs14","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e29","a":"AR","b":"ib15","k":"tr","l":"rotate (hypar)","ar":"none","bend":0,"lp":0.55},{"id":"e30","a":"ib15","b":"cs15","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e31","a":"PA","b":"ib16","k":"tr","l":"scale (tall)","ar":"none","bend":0,"lp":0.55},{"id":"e32","a":"ib16","b":"cs16","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e33","a":"PA","b":"ib17","k":"tr","l":"array","ar":"none","bend":0,"lp":0.55},{"id":"e34","a":"ib17","b":"cs17","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e35","a":"PA","b":"ib18","k":"tr","l":"translate (surface)","ar":"none","bend":0,"lp":0.55},{"id":"e36","a":"ib18","b":"cs18","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e37","a":"PA","b":"ib19","k":"tr","l":"add branches","ar":"none","bend":0,"lp":0.55},{"id":"e38","a":"ib19","b":"cs19","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e39","a":"PA","b":"ib20","k":"tr","l":"array grid","ar":"none","bend":0,"lp":0.55},{"id":"e40","a":"ib20","b":"cs20","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e41","a":"AC","b":"ib21","k":"tr","l":"array arches","ar":"none","bend":0,"lp":0.55},{"id":"e42","a":"ib21","b":"cs21","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e43","a":"AC","b":"ib22","k":"tr","l":"rotate + net","ar":"none","bend":0,"lp":0.55},{"id":"e44","a":"ib22","b":"cs22","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e45","a":"AC","b":"ib23","k":"tr","l":"radial + split struts","ar":"none","bend":0,"lp":0.55},{"id":"e46","a":"ib23","b":"cs23","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e47","a":"AC","b":"ib24","k":"tr","l":"split struts + stack","ar":"none","bend":0,"lp":0.55},{"id":"e48","a":"ib24","b":"cs24","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e49","a":"CT","b":"ib25","k":"tr","l":"array + prestress","ar":"none","bend":0,"lp":0.55},{"id":"e50","a":"ib25","b":"cs25","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e51","a":"CT","b":"ib26","k":"tr","l":"translate (net)","ar":"none","bend":0,"lp":0.55},{"id":"e52","a":"ib26","b":"cs26","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e53","a":"CT","b":"ib27","k":"tr","l":"rotate radial","ar":"none","bend":0,"lp":0.55},{"id":"e54","a":"ib27","b":"cs27","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e55","a":"PC","b":"ib28","k":"tr","l":"add hangers","ar":"none","bend":0,"lp":0.55},{"id":"e56","a":"ib28","b":"cs28","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e57","a":"PC","b":"ib29","k":"tr","l":"translate (surface)","ar":"none","bend":0,"lp":0.55},{"id":"e58","a":"ib29","b":"cs29","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e59","a":"PC","b":"ib30","k":"tr","l":"extrude","ar":"none","bend":0,"lp":0.55},{"id":"e60","a":"ib30","b":"cs30","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e61","a":"CB","b":"ib31","k":"tr","l":"array stays","ar":"none","bend":0,"lp":0.55},{"id":"e62","a":"ib31","b":"cs31","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e63","a":"CB","b":"ib32","k":"tr","l":"rotate 90° (hang)","ar":"none","bend":0,"lp":0.55},{"id":"e64","a":"ib32","b":"cs32","k":"mat","l":"Materialize","ar":"none","bend":0,"lp":0.5},{"id":"e65","a":"TA","b":"AC","k":"comb","l":"","ar":"none","bend":0,"lp":0.55},{"id":"e66","a":"TC","b":"AC","k":"comb","l":"","ar":"none","bend":0,"lp":0.55},{"id":"e67","a":"AC","b":"BM","k":"tr","l":"scale","ar":"none","bend":0,"lp":0.55},{"id":"e68","a":"AC","b":"TR","k":"tr","l":"stack","ar":"none","bend":0,"lp":0.55},{"id":"e69","a":"TR","b":"FR","k":"tr","l":"fix joints","ar":"none","bend":0,"lp":0.55},{"id":"e70","a":"AC","b":"AR","k":"tr","l":"remove tie","ar":"none","bend":0,"lp":0.55},{"id":"e71","a":"AR","b":"PA","k":"tr","l":"subdivide","ar":"none","bend":0,"lp":0.55},{"id":"e72","a":"AC","b":"CT","k":"tr","l":"mirror","ar":"none","bend":0,"lp":0.55},{"id":"e73","a":"AC","b":"CB","k":"tr","l":"remove arch","ar":"none","bend":0,"lp":0.55},{"id":"e74","a":"CB","b":"PC","k":"tr","l":"subdivide","ar":"none","bend":0,"lp":0.55}]}</script>
+<script id="app">
+(() => {
+'use strict';
+// ---------- page source, captured before anything renders (used to save a new version of this page) ----------
+const SRC = {
+  pre: '<title>Prototype Graph Editor</title><meta name="claude:viewport-fit-sides" content="cover"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">',
+  css: document.getElementById('css').textContent,
+  shell: document.getElementById('root').outerHTML,
+  app: document.getElementById('app').textContent
+};
+const RESET = ':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}';
+const SC = '</' + 'script>';
+const DKEY = 'prototype-graph-draft-v1';
+
+// ---------- capabilities ----------
+const use = n => (window.claude && typeof window.claude.use === 'function') ? window.claude.use(n).catch(() => null) : Promise.resolve(null);
+const CAP = {artifact: undefined, assets: undefined, downloads: undefined};
+let readOnly = false;
+let inFrame = true; try { inFrame = window.self !== window.top; } catch (e) { inFrame = true; }
+['artifact', 'assets', 'downloads'].forEach(k => use(k).then(v => { CAP[k] = v; capsUI(); }));
+
+// ---------- state ----------
+const embedded = JSON.parse(document.getElementById('graph-data').textContent);
+let state = embedded, restored = false;
+try {
+  const d = JSON.parse(localStorage.getItem(DKEY) || 'null');
+  if (d && d.base === embedded.savedAt && d.state && Array.isArray(d.state.nodes)) { state = d.state; restored = true; }
+} catch (e) { /* storage unavailable */ }
+state.opts = Object.assign({captions: true, snap: false, pngScale: 2, arrow: 'none'}, state.opts || {});
+let byId = {};
+const reindex = () => { byId = Object.fromEntries(state.nodes.map(n => [n.id, n])); };
+reindex();
+let dirty = restored;
+let sel = {nodes: new Set(), edge: null, legend: false};
+let mode = 'select', connectFrom = null, preview = null, drag = null, dropTarget = null;
+const undoS = [], redoS = [];
+let lastKey = null, lastT = 0;
+
+// ---------- figure vocabulary ----------
+const figCSS = p => `${p}text{font-family:Calibri,Carlito,"Segoe UI","Helvetica Neue",Arial,sans-serif;fill:#1f2328}
+${p}.c{stroke:#2f6fd6;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+${p}.t{stroke:#c8323a;stroke-width:2.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+${p}.f{stroke:#22a05a;stroke-width:2.2;fill:none}${p}.fh{fill:#22a05a}${p}.s{fill:#5b636e}
+${p}.lk{stroke:#c4c8ce;stroke-width:7;stroke-linecap:round;fill:none}${p}.lk.mat{stroke:#3a3f45;stroke-width:3}${p}.lk.comb{stroke:#6b717a;stroke-width:1.8}
+${p}.pill{fill:#c4c8ce}${p}.pill.mat{fill:#111111}
+${p}.ptxt{font-size:10.5px;fill:#30353b;text-anchor:middle;dominant-baseline:central}${p}.ptxt.mat{fill:#ffffff;font-weight:700}
+${p}.nl{font-size:11.5px;text-anchor:middle}${p}.nl.b{font-weight:700}
+${p}.cl{font-size:11px;text-anchor:middle;font-weight:700}${p}.cy{font-size:10px;text-anchor:middle;fill:#5b636e}
+${p}.lg{font-size:17px}`;
+const MARKERS = [['tr', 20, '#b8bdc4'], ['mat', 14, '#3a3f45'], ['comb', 11, '#6b717a']].map(([k, s, c]) =>
+  `<marker id="ah-${k}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="${s}" markerHeight="${s}" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="${c}"/></marker>`).join('');
+
+const A = (x, y1, y2) => `<line class="f" x1="${x}" y1="${y1}" x2="${x}" y2="${y2-6}"/><path class="fh" d="M${x-4.5},${y2-7} L${x+4.5},${y2-7} L${x},${y2} Z"/>`;
+const AH = (x1, x2, y) => `<line class="f" x1="${x1}" y1="${y}" x2="${x2-6}" y2="${y}"/><path class="fh" d="M${x2-7},${y-4.5} L${x2-7},${y+4.5} L${x2},${y} Z"/>`;
+const S = (x, y) => `<path class="s" d="M${x},${y} l-6,8 h12 Z"/>`;
+const SD = (x, y) => `<path class="s" d="M${x},${y} l-6,-8 h12 Z"/>`;
+const G = {
+  TA: `${A(50,6,30)}<path class="c" d="M14,74 L50,32 L86,74"/><path class="t" d="M14,74 H86"/>${S(14,75)}${S(86,75)}`,
+  TC: `${SD(14,26)}${SD(86,26)}<path class="t" d="M14,26 L50,66 L86,26"/><path class="c" d="M14,26 H86"/>${A(50,66,90)}`,
+  AC: `${A(30,4,30)}${A(50,4,22)}${A(70,4,30)}<path class="c" d="M10,72 Q50,-4 90,72"/><path class="t" d="M10,72 H90"/><path class="t" d="M30,42 V72 M50,34 V72 M70,42 V72" opacity=".75"/>${S(10,73)}${S(90,73)}`,
+  BM: `${A(50,8,38)}<path class="c" d="M10,42 H90"/><path class="t" d="M10,42 L50,72 L90,42"/><path class="c" d="M50,42 V72"/>${S(10,43)}${S(90,43)}`,
+  CT: `<path class="t" d="M10,50 Q50,14 90,50"/><path class="t" d="M10,50 Q50,86 90,50"/><path class="c" d="M30,37 V63 M50,32 V68 M70,37 V63"/>${S(10,51)}${S(90,51)}`,
+  AR: `${A(32,10,40)}${A(68,10,40)}<path class="c" d="M10,78 L32,42 L68,42 L90,78"/>${S(10,79)}${S(90,79)}`,
+  CB: `${SD(10,22)}${SD(90,22)}<path class="t" d="M10,22 L32,58 L68,58 L90,22"/>${A(32,58,84)}${A(68,58,84)}`,
+  TR: `${A(50,8,36)}<path class="c" d="M22,40 H78"/><path class="t" d="M10,70 H90"/><path class="c" d="M10,70 L22,40 M90,70 L78,40 M41,70 L31,40 M59,70 L69,40"/><path class="t" d="M22,40 L31,70 M31,40 L41,70 M69,40 L59,70 M78,40 L69,70"/><path class="c" d="M50,40 L41,70 M50,40 L59,70"/>${S(10,71)}${S(90,71)}`,
+  PA: `${A(22,4,42)}${A(36,4,30)}${A(50,4,26)}${A(64,4,30)}${A(78,4,42)}<path class="c" d="M8,80 Q50,-14 92,80"/>${S(8,81)}${S(92,81)}`,
+  PC: `${SD(8,22)}${SD(92,22)}<path class="t" d="M8,22 Q50,110 92,22"/>${A(22,48,64)}${A(36,58,74)}${A(50,62,78)}${A(64,58,74)}${A(78,48,64)}`,
+  FR: `${A(50,8,36)}<path class="c" d="M16,82 V40 H84 V82"/><path class="t" d="M16,40 L50,54 L84,40" opacity=".8"/>${S(16,83)}${S(84,83)}`,
+  eiffel: `<path class="c" d="M26,92 Q40,60 47,10 M74,92 Q60,60 53,10"/><path class="t" d="M31,78 L67,78 M37,58 L62,58 M42,38 L57,38 M31,78 L62,58 M67,78 L37,58 M37,58 L57,38 M62,58 L42,38"/>${AH(2,24,30)}${S(26,93)}${S(74,93)}`,
+  bio: `<path class="c" d="M8,82 Q8,24 50,22 Q92,24 92,82"/><path class="c" d="M8,82 L28,46 L50,22 L72,46 L92,82 M28,46 L50,82 L72,46 M28,46 H72 M50,22 V82" opacity=".75"/><path class="t" d="M8,82 H92"/>`,
+  gherkin: `<path class="c" d="M50,6 C76,24 76,70 62,94 M50,6 C24,24 24,70 38,94"/><path class="c" d="M38,92 L66,62 M62,92 L34,62 M34,62 L68,32 M66,62 L32,32 M33,32 L56,12 M67,32 L44,12" opacity=".75"/>${AH(0,20,52)}`,
+  boc: `<path class="c" d="M34,92 V20 L50,6 L66,20 V92"/><path class="c" d="M34,92 L66,56 M66,92 L34,56 M34,56 L66,20 M66,56 L34,20"/><path class="t" d="M34,56 H66 M34,20 H66" opacity=".85"/>${AH(4,28,40)}`,
+  nng: `${A(30,4,28)}${A(50,4,28)}${A(70,4,28)}<path class="c" d="M8,32 H92"/><path class="t" d="M8,44 H92"/><path class="c" d="M18,32 V44 M34,32 V44 M50,32 V44 M66,32 V44 M82,32 V44" opacity=".6"/><path class="c" d="M24,44 V88 M76,44 V88"/>${S(24,89)}${S(76,89)}`,
+  pudong: `${A(30,6,32)}${A(50,6,30)}${A(70,6,32)}<path class="c" d="M8,40 Q50,26 92,40"/><path class="t" d="M8,40 Q50,82 92,40"/><path class="c" d="M30,35 V58 M50,33 V62 M70,35 V58"/>${S(8,41)}${S(92,41)}`,
+  infinity: `<path class="c" d="M6,70 Q28,22 50,70 Q72,30 94,70"/><path class="t" d="M6,70 H94"/><path class="t" d="M17,50 V70 M28,40 V70 M39,50 V70 M61,52 V70 M72,46 V70 M83,52 V70" opacity=".7"/>${S(6,71)}${S(50,71)}${S(94,71)}`,
+  dorton: `<path class="c" d="M8,88 Q38,4 68,88 M32,88 Q62,4 92,88"/><path class="t" d="M22,62 Q50,76 78,62 M26,46 Q50,60 74,46"/>`,
+  seoul: `<ellipse cx="50" cy="72" rx="40" ry="10" class="c"/><ellipse cx="50" cy="52" rx="26" ry="7" class="t"/><ellipse cx="50" cy="34" rx="12" ry="4" class="t"/><path class="c" d="M24,52 V64 M76,52 V64 M38,34 V46 M62,34 V46"/><path class="t" d="M10,72 L24,52 L38,34 L50,30 L62,34 L76,52 L90,72"/>`,
+  needle: `<path class="c" d="M36,92 L60,64 M62,92 L38,64 M38,66 L62,40 M62,66 L38,40 M40,42 L60,14 M60,42 L40,14"/><path class="t" d="M36,92 L62,92 M38,64 L62,64 M38,40 L62,40 M40,14 L60,14 M36,92 L38,64 L40,42 L40,14 M62,92 L62,64 L60,40 L60,14" opacity=".85"/>${AH(4,26,40)}`,
+  millau: `<path class="c" d="M50,8 V80 M4,80 H96"/><path class="t" d="M50,14 L12,80 M50,22 L24,80 M50,30 L36,80 M50,14 L88,80 M50,22 L76,80 M50,30 L64,80"/>${S(50,81)}`,
+  hsbc: `<path class="c" d="M22,8 V92 M78,8 V92 M22,22 L50,10 L78,22 M22,22 H78"/><path class="t" d="M36,22 V74 M64,22 V74"/><path class="c" d="M22,42 H78 M22,58 H78 M22,74 H78" opacity=".55"/>${S(22,93)}${S(78,93)}`,
+  gg: `<path class="c" d="M28,18 V84 M72,18 V84 M4,72 H96"/><path class="t" d="M4,46 Q18,46 28,18 M28,18 Q50,72 72,18 M72,18 Q82,46 96,46"/><path class="t" d="M36,40 V72 M44,50 V72 M50,52 V72 M56,50 V72 M64,40 V72" opacity=".7"/>`,
+  yoyogi: `<path class="c" d="M30,12 V84 M70,12 V84"/><path class="t" d="M6,78 Q20,40 30,12 Q50,48 70,12 Q80,40 94,78"/><path class="t" d="M14,60 Q50,70 86,60" opacity=".55"/>${S(30,85)}${S(70,85)}`,
+  pav: `${A(36,20,44)}${A(64,20,44)}<path class="c" d="M6,30 V90 M18,30 V90 M82,30 V90 M94,30 V90 M6,30 H18 M82,30 H94"/><path class="t" d="M18,32 Q50,66 82,32"/>`,
+  utica: `<path class="c" d="M12,84 V22 M88,84 V22"/><path class="t" d="M12,30 Q50,58 88,30"/><path class="t" d="M12,62 Q50,36 88,62"/><path class="c" d="M31,40 V51 M50,44 V49 M69,40 V51" opacity=".9"/>${S(12,85)}${S(88,85)}`,
+  munich: `<path class="t" d="M8,30 Q50,62 92,30"/><path class="t" d="M8,30 Q50,78 92,30" opacity=".6"/><path class="t" d="M20,78 Q50,40 80,78"/><path class="t" d="M30,82 Q50,52 70,82" opacity=".6"/><path class="c" d="M8,30 L8,86 M92,30 L92,86"/>${S(8,87)}${S(92,87)}`,
+  spoke: `<ellipse cx="50" cy="56" rx="44" ry="22" class="c"/><ellipse cx="50" cy="56" rx="14" ry="7" class="t"/><path class="t" d="M6,56 H36 M94,56 H64 M50,34 V49 M50,78 V63 M19,40 L39,51 M81,40 L61,51 M19,72 L39,61 M81,72 L61,61"/>`,
+  gateway: `<path class="c" d="M18,94 Q50,-34 82,94"/><path class="c" d="M26,94 Q50,-6 74,94" opacity=".45"/>${S(18,95)}${S(82,95)}`,
+  mila: `${A(20,10,34)}${A(50,10,34)}${A(80,10,34)}<path class="c" d="M6,86 Q20,20 34,86 M36,86 Q50,20 64,86 M66,86 Q80,20 94,86"/>`,
+  armadillo: `<path class="c" d="M10,80 Q50,8 90,80"/><path class="c" d="M22,80 Q50,30 78,80" opacity=".7"/><path class="c" d="M10,80 Q30,62 50,58 Q70,62 90,80" opacity=".55"/><path class="c" d="M50,44 V80" opacity=".5"/>${S(10,81)}${S(90,81)}`,
+  sagrada: `${A(16,0,12)}${A(36,0,12)}${A(64,0,12)}${A(84,0,12)}<path class="c" d="M50,94 V58 M50,58 L30,34 M50,58 L70,34 M30,34 L16,14 M30,34 L36,14 M70,34 L64,14 M70,34 L84,14"/>${S(50,95)}`,
+  multi: `<path class="c" d="M6,84 Q50,-2 94,84"/><path class="c" d="M20,84 Q50,26 80,84 M34,84 Q50,50 66,84" opacity=".6"/><path class="c" d="M14,66 H86 M22,48 H78 M34,32 H66" opacity=".55"/>`,
+  crown: `<path class="c" d="M10,92 V20 H90 V92"/><path class="t" d="M30,20 V42 M50,20 V42 M70,20 V42"/><path class="c" d="M14,42 H86" opacity=".6"/>${S(10,93)}${S(90,93)}`,
+  sendai: `<path class="c" d="M6,26 H94 M6,50 H94 M6,74 H94" opacity=".5"/><path class="c" d="M22,94 L28,74 L22,50 L28,26 L24,6 M36,94 L30,74 L36,50 L30,26 L34,6 M64,94 L70,74 L64,50 L70,26 L66,6 M78,94 L72,74 L78,50 L72,26 L76,6"/><path class="t" d="M22,50 L36,74 M28,26 L30,50 M64,50 L78,74 M70,26 L72,50" opacity=".8"/>`,
+  cctv: `<path class="c" d="M18,90 L28,24 M40,90 L46,24 M28,24 H86 V52 H62 M46,40 H62 M62,40 V60 M86,52 V60 M18,90 H40"/><path class="t" d="M28,24 L46,40 M46,24 L28,40 M62,40 L86,52 M86,40 L62,52" opacity=".85"/>${A(74,62,84)}`,
+  habitat: `<path class="c" d="M6,92 H38 V74 H6 Z M32,74 H66 V56 H32 Z M60,92 H94 V74 H60 Z M18,56 H52 V38 H18 Z M46,38 H80 V20 H46 Z"/><path class="t" d="M6,74 L38,92 M32,56 L66,74 M18,38 L52,56" opacity=".55"/>`,
+  gard: `<path class="c" d="M6,92 V76 Q20,58 34,76 V92 M34,76 Q48,58 62,76 V92 M62,76 Q76,58 94,76 V92 M6,62 H94 M6,62 V76 M6,48 H94 M6,48 V62 M6,48 Q13,42 20,48 M20,48 Q27,42 34,48 M34,48 Q41,42 48,48 M48,48 Q55,42 62,48 M62,48 Q69,42 76,48 M76,48 Q83,42 94,48 M6,36 H94 M6,36 V48 M94,36 V76"/>`,
+  sydney: `<path class="c" d="M8,82 Q50,2 92,82"/><path class="c" d="M18,82 Q50,22 82,82" opacity=".7"/><path class="t" d="M28,48 V64 M50,34 V64 M72,48 V64"/><path class="c" d="M2,64 H98"/>${S(8,83)}${S(92,83)}`,
+  palaz: `<path class="c" d="M10,74 Q10,26 50,24 Q90,26 90,74"/><path class="c" d="M50,24 L24,74 M50,24 L38,74 M50,24 L62,74 M50,24 L76,74" opacity=".8"/><path class="c" d="M10,74 L4,88 M10,74 L16,88 M90,74 L84,88 M90,74 L96,88"/><path class="t" d="M10,74 H90"/>`,
+  kresge: `<path class="c" d="M8,84 Q50,6 92,84"/><path class="c" d="M8,84 Q50,62 92,84" opacity=".6"/><path class="c" d="M50,44 L50,76" opacity=".4"/>${S(8,85)}${S(92,85)}${S(50,75)}`,
+  mana: `<path class="c" d="M6,36 Q28,70 50,44 Q72,70 94,36 M6,36 L50,88 L94,36 M50,44 V88"/><path class="t" d="M6,36 Q50,18 94,36" opacity=".6"/>${S(50,89)}`
+};
+const GLYPHS = [['', 'No diagram'], ['TA', 'Triangular arch'], ['TC', 'Triangular cable'], ['AC', 'Arch-cable'], ['BM', 'Beam'], ['TR', 'Truss'], ['FR', 'Frame'], ['AR', 'Arch'], ['PA', 'Parabolic arch'], ['CT', 'Gable truss'], ['PC', 'Parabolic cable'], ['CB', 'Cable'],
+  ['nng', 'Beam grillage'], ['pudong', 'Beam string'], ['bio', 'Spatial truss dome'], ['eiffel', 'Tapered truss tower'], ['gherkin', 'Diagrid'], ['boc', 'Space megatruss'], ['crown', 'Portal frame'], ['sendai', 'Tube-and-plate frame'], ['cctv', 'Looped tube frame'], ['habitat', 'Stacked modules'],
+  ['gard', 'Multi-tier arcade'], ['sydney', 'Trussed arch'], ['palaz', 'Ribbed dome'], ['kresge', 'Thin shell dome'], ['mana', 'Hypar shell'], ['gateway', 'Catenary arch'], ['mila', 'Catenary arcade'], ['armadillo', 'Funicular vault'], ['sagrada', 'Branching column'], ['multi', 'Funicular gridshell'],
+  ['infinity', 'Tied arch'], ['dorton', 'Arch-supported net'], ['seoul', 'Cable dome'], ['needle', 'Tensegrity tower'], ['utica', 'Double-cable truss'], ['munich', 'Anticlastic cable net'], ['spoke', 'Spoke wheel'], ['gg', 'Suspension span'], ['yoyogi', 'Suspended roof'], ['pav', 'Hanging canopy'], ['millau', 'Cable-stayed fan'], ['hsbc', 'Hung floors']];
+const TYPES = [['orig', 'Original prototype'], ['core', 'Core prototype'], ['adj', 'Adjusted prototype'], ['ib', 'In-Between State'], ['case', 'Built Case']];
+const TYPE_NAME = Object.fromEntries(TYPES);
+
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const r1 = v => Math.round(v * 10) / 10;
+const uid = p => p + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+const oneLine = s => String(s || '').replace(/-\n/g, '-').replace(/\n/g, ' ').trim();
+const wrap = (s, w = 11) => { const out = []; let cur = ''; for (const x of String(s).split(/\s+/)) { if (cur && (cur + ' ' + x).length > w) { out.push(cur); cur = x; } else cur = cur ? cur + ' ' + x : x; } if (cur) out.push(cur); return out.slice(0, 4).join('\n'); };
+const mctx = document.createElement('canvas').getContext('2d');
+const tw = new Map();
+const textW = (t, bold) => { const k = (bold ? 'b' : '') + t; if (!tw.has(k)) { mctx.font = `${bold ? '700 ' : ''}10.5px Calibri, Carlito, "Segoe UI", "Helvetica Neue", Arial, sans-serif`; tw.set(k, mctx.measureText(t).width); } return tw.get(k); };
+const imgSrc = n => n.img ? (n.img.asset ? '/_blob/' + n.img.asset : n.img.src) : null;
+let toastT = 0;
+function toast(msg) { const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3600); }
+
+// ---------- node, edge, legend markup ----------
+function imgMarkup(n, R, src, exp) {
+  const z = n.img.z || 1, s = 2 * R * z, ox = (n.img.ox || 0) * R, oy = (n.img.oy || 0) * R;
+  const href = exp ? `xlink:href="${esc(src)}"` : `href="${esc(src)}"`;
+  return `<clipPath id="k-${n.id}"><circle r="${R}"/></clipPath><image ${href} x="${r1(-s / 2 + ox)}" y="${r1(-s / 2 + oy)}" width="${r1(s)}" height="${r1(s)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#k-${n.id})"/>`;
+}
+function textBelow(lines, r, cls, year) {
+  let s = '', y = r + 16;
+  lines.forEach(l => { s += `<text y="${y}" class="${cls}">${esc(l)}</text>`; y += 12.5; });
+  if (year) s += `<text y="${y + 1}" class="cy">${esc(year)}</text>`;
+  return s;
+}
+// caption on the side facing away from the linked In-Between State, so it never sits on the incoming link
+function captionOut(n, lines, r) {
+  const e = state.edges.find(x => x.b === n.id) || state.edges.find(x => x.a === n.id);
+  const o = e && byId[e.a === n.id ? e.b : e.a];
+  let ux = 0, uy = 1;
+  if (o) { const d = Math.hypot(n.x - o.x, n.y - o.y) || 1; ux = (n.x - o.x) / d; uy = (n.y - o.y) / d; }
+  const rows = lines.map(l => [l, 'cl']).concat(n.year ? [[n.year, 'cy']] : []), lh = 12.5;
+  let x = 0, y, anchor = '';
+  if (uy > 0.6) y = r + 16;
+  else if (uy < -0.6) y = -r - 8 - (rows.length - 1) * lh;
+  else { x = ux > 0 ? r + 8 : -r - 8; anchor = ux > 0 ? 'start' : 'end'; y = -(rows.length - 1) * lh / 2 + 4; }
+  return rows.map(([t, c], i) => `<text x="${x}" y="${r1(y + i * lh)}" class="${c}"${anchor ? ` style="text-anchor:${anchor}"` : ''}>${esc(t)}</text>`).join('');
+}
+function nodeInner(n, exp, srcOverride) {
+  const r = n.r, src = srcOverride !== undefined ? srcOverride : imgSrc(n);
+  const lines = String(n.label || '').split('\n').filter(l => l.length);
+  let s = '';
+  if (n.t === 'case') {
+    s += `<circle r="${r}" fill="#ffffff" stroke="#2a2e33" stroke-width="1.6"/>`;
+    if (src) {
+      s += imgMarkup(n, r - 5, src, exp) + `<circle r="${r - 5}" fill="none" stroke="#2a2e33" stroke-width="1.2"/>`;
+      if (state.opts.captions) s += captionOut(n, lines, r);
+    } else {
+      s += `<circle r="${r - 5}" fill="#f7f8f9" stroke="#2a2e33" stroke-width="1.2"/>`;
+      const total = lines.length * 13 + (n.year ? 13 : 0);
+      let y = -total / 2 + 10;
+      lines.forEach(l => { s += `<text y="${r1(y)}" class="cl">${esc(l)}</text>`; y += 13; });
+      if (n.year) s += `<text y="${r1(y + 1)}" class="cy">${esc(n.year)}</text>`;
+    }
+  } else if (n.t === 'ib') {
+    s += `<circle r="${r}" fill="#ffffff" stroke="#2a2e33" stroke-width="1.4"/>`;
+    if (src) s += imgMarkup(n, r - 1, src, exp) + `<circle r="${r}" fill="none" stroke="#2a2e33" stroke-width="1.4"/>`;
+    else if (G[n.glyph]) { const b = r * 1.49; s += `<g transform="translate(${r1(-b / 2)},${r1(-b / 2)}) scale(${(b / 100).toFixed(4)})">${G[n.glyph]}</g>`; }
+    if (n.cap) s += textBelow(lines, r - 2, 'nl', '');
+  } else {
+    const fill = n.t === 'orig' ? '#c3c7cd' : '#eceef1', stroke = n.t === 'core' ? '#2a2e33' : '#9aa1aa', sw = n.t === 'core' ? 2.8 : 1.2;
+    const cls = 'nl' + (n.t !== 'adj' ? ' b' : '');
+    s += `<circle r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+    if (src) {
+      s += imgMarkup(n, r - sw / 2, src, exp) + `<circle r="${r}" fill="none" stroke="${stroke}" stroke-width="${sw}"/>` + textBelow(lines, r - 2, cls, '');
+    } else {
+      if (G[n.glyph]) { const b = r * 1.08, oy = -r * 0.24; s += `<g transform="translate(${r1(-b / 2)},${r1(-b / 2 + oy)}) scale(${(b / 100).toFixed(4)})">${G[n.glyph]}</g>`; }
+      let y = r * 0.55 - (lines.length > 1 ? 4 : 0);
+      if (!G[n.glyph]) y = -(lines.length - 1) * 6 + 4;
+      lines.forEach(l => { s += `<text y="${r1(y)}" class="${cls}">${esc(l)}</text>`; y += 12; });
+    }
+  }
+  return s;
+}
+const nodeMarkup = (n, exp, srcOverride) => `<g class="nd" data-id="${n.id}" transform="translate(${r1(n.x)},${r1(n.y)})">${nodeInner(n, exp, srcOverride)}</g>`;
+
+function edgeGeom(e) {
+  const a = byId[e.a], b = byId[e.b];
+  if (!a || !b || a === b) return null;
+  const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+  if (d < a.r + b.r + 4) return null;
+  const bend = +e.bend || 0, cx = (a.x + b.x) / 2 - dy / d * bend * d * 0.5, cy = (a.y + b.y) / 2 + dx / d * bend * d * 0.5;
+  const ua = Math.hypot(cx - a.x, cy - a.y) || 1, ub = Math.hypot(cx - b.x, cy - b.y) || 1;
+  return {sx: a.x + (cx - a.x) / ua * a.r, sy: a.y + (cy - a.y) / ua * a.r, ex: b.x + (cx - b.x) / ub * b.r, ey: b.y + (cy - b.y) / ub * b.r, cx, cy, curved: Math.abs(bend) > 0.001};
+}
+const pathD = g => g.curved ? `M${r1(g.sx)},${r1(g.sy)} Q${r1(g.cx)},${r1(g.cy)} ${r1(g.ex)},${r1(g.ey)}` : `M${r1(g.sx)},${r1(g.sy)} L${r1(g.ex)},${r1(g.ey)}`;
+function edgeMarkup(e, live) {
+  const g = edgeGeom(e); if (!g) return '';
+  const k = e.k || 'tr', d = pathD(g);
+  const ms = (e.ar === 'start' || e.ar === 'both') ? ` marker-start="url(#ah-${k})"` : '';
+  const me = (e.ar === 'end' || e.ar === 'both') ? ` marker-end="url(#ah-${k})"` : '';
+  let s = `<path class="lk${k === 'tr' ? '' : ' ' + k}" d="${d}"${ms}${me}/>`;
+  if (live) s += `<path class="hit" data-e="${e.id}" d="${d}"/>`;
+  if (e.l) {
+    const t = e.lp ?? 0.5, u = 1 - t;
+    let px, py, tx, ty;
+    if (g.curved) { px = u * u * g.sx + 2 * u * t * g.cx + t * t * g.ex; py = u * u * g.sy + 2 * u * t * g.cy + t * t * g.ey; tx = 2 * u * (g.cx - g.sx) + 2 * t * (g.ex - g.cx); ty = 2 * u * (g.cy - g.sy) + 2 * t * (g.ey - g.cy); }
+    else { px = g.sx + (g.ex - g.sx) * t; py = g.sy + (g.ey - g.sy) * t; tx = g.ex - g.sx; ty = g.ey - g.sy; }
+    let a = Math.atan2(ty, tx) * 180 / Math.PI; if (a > 90) a -= 180; if (a < -90) a += 180;
+    const mat = k === 'mat', w = Math.max(mat ? 64 : 40, textW(e.l, mat) + 16);
+    s += `<g transform="translate(${r1(px)},${r1(py)}) rotate(${r1(a)})"${live ? ` data-e="${e.id}"` : ''}><rect x="${r1(-w / 2)}" y="-8" width="${r1(w)}" height="16" rx="8" class="pill${mat ? ' mat' : ''}"/><text y=".5" class="ptxt${mat ? ' mat' : ''}">${esc(e.l)}</text></g>`;
+  }
+  return `<g>${s}</g>`;
+}
+function legendMarkup(live) {
+  const L = state.legend; if (!L || !L.show) return '';
+  let s = live ? '<rect x="-4" y="-46" width="296" height="720" fill="transparent"/>' : '';
+  [[0, 'orig', 'Original'], [95, 'core', 'Core'], [180, 'adj', 'Adjust']].forEach(([y, k, t]) => {
+    s += `<circle cx="50" cy="${y}" r="38" fill="${k === 'orig' ? '#c3c7cd' : '#eceef1'}" stroke="${k === 'core' ? '#2a2e33' : '#9aa1aa'}" stroke-width="${k === 'core' ? 2.8 : 1.2}"/><text x="50" y="${y + 5}" text-anchor="middle" font-size="15">${t}</text>`;
+  });
+  s += '<path d="M104,-30 h10 v240 h-10" fill="none" stroke="#2a2e33" stroke-width="1.2"/><text x="122" y="96" class="lg">Prototypes</text>';
+  s += '<circle cx="50" cy="290" r="32" fill="#ffffff" stroke="#2a2e33" stroke-width="1.4"/><text x="100" y="285" class="lg">In-Between</text><text x="100" y="305" class="lg">State</text>';
+  s += '<circle cx="50" cy="380" r="33" fill="#ffffff" stroke="#2a2e33" stroke-width="1.6"/><circle cx="50" cy="380" r="28" fill="#ffffff" stroke="#2a2e33" stroke-width="1.2"/><text x="100" y="386" class="lg">Built Case</text>';
+  const row = (y, cls, pc, pt, label) => {
+    s += `<line x1="4" y1="${y}" x2="94" y2="${y}" class="${cls}"/>`;
+    if (pc) s += `<rect x="20" y="${y - 7.5}" width="58" height="15" rx="7.5" class="${pc}"/><text x="49" y="${y + .5}" class="ptxt${pc.includes('mat') ? ' mat' : ''}" font-size="8.5">${pt}</text>`;
+    s += `<text x="104" y="${y + 5}" class="lg">${label}</text>`;
+  };
+  row(460, 'lk', 'pill', 'command', 'Transformation');
+  row(500, 'lk mat', 'pill mat', 'Materialize', 'Materialization');
+  row(540, 'lk comb', '', '', 'Combination');
+  row(585, 'f', '', '', 'External force');
+  row(620, 'c', '', '', 'Compression');
+  row(655, 't', '', '', 'Tension');
+  return `<g${live ? ' data-legend="1"' : ''} transform="translate(${r1(L.x)},${r1(L.y)})">${s}</g>`;
+}
+
+// ---------- canvas ----------
+const cv = $('cv');
+cv.innerHTML = `<defs><style>${figCSS('.fg ')}</style>${MARKERS}</defs><rect class="board" id="board" x="0" y="0" fill="#ffffff"/><g id="L-edges"></g><g id="L-nodes"></g><g id="L-legend"></g><g id="L-over" class="ov"></g>`;
+const L_edges = $('L-edges'), L_nodes = $('L-nodes'), L_legend = $('L-legend'), L_over = $('L-over');
+let cam = {x: -40, y: -40, w: 2260, h: 1540};
+function applyCam() {
+  cv.setAttribute('viewBox', `${r1(cam.x)} ${r1(cam.y)} ${r1(cam.w)} ${r1(cam.h)}`);
+  const w = cv.clientWidth || 1;
+  $('zoomv').textContent = Math.round(w / cam.w * 100) + '%';
+}
+function fit() {
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  const pad = 40, bw = state.board.w + pad * 2, bh = state.board.h + pad * 2, ar = h / w;
+  let vw = bw, vh = bw * ar; if (vh < bh) { vh = bh; vw = bh / ar; }
+  cam = {x: -pad - (vw - bw) / 2, y: -pad - (vh - bh) / 2, w: vw, h: vh}; applyCam();
+}
+function zoomAt(k, px, py) {
+  const rect = cv.getBoundingClientRect();
+  const nw = Math.min(20000, Math.max(200, cam.w * k)); k = nw / cam.w;
+  const fx = (px - rect.left) / rect.width, fy = (py - rect.top) / rect.height;
+  const wx = cam.x + fx * cam.w, wy = cam.y + fy * cam.h;
+  cam.w = nw; cam.h *= k; cam.x = wx - fx * cam.w; cam.y = wy - fy * cam.h; applyCam();
+}
+new ResizeObserver(() => {
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  const cxm = cam.x + cam.w / 2, cym = cam.y + cam.h / 2; cam.h = cam.w * h / w; cam.x = cxm - cam.w / 2; cam.y = cym - cam.h / 2; applyCam();
+}).observe(cv);
+const nodeAt = (x, y) => { const el = document.elementFromPoint(x, y); const g = el && el.closest && el.closest('.nd'); return g ? g.dataset.id : null; };
+const toWorld = ev => { const r = cv.getBoundingClientRect(); return {x: cam.x + (ev.clientX - r.left) / r.width * cam.w, y: cam.y + (ev.clientY - r.top) / r.height * cam.h}; };
+
+function renderBoard() { const b = $('board'); b.setAttribute('width', state.board.w); b.setAttribute('height', state.board.h); }
+function renderEdges() { L_edges.innerHTML = state.edges.map(e => edgeMarkup(e, true)).join(''); }
+function renderNodes() { L_nodes.innerHTML = state.nodes.map(n => nodeMarkup(n, false)).join(''); }
+function renderLegend() { L_legend.innerHTML = legendMarkup(true); }
+function updateNode(id) {
+  const n = byId[id], el = L_nodes.querySelector(`[data-id="${id}"]`); if (!n || !el) return renderNodes();
+  const tmp = document.createElementNS('http://www.w3.org/2000/svg', 'g'); tmp.innerHTML = nodeMarkup(n, false); el.replaceWith(tmp.firstChild);
+}
+function moveNodeEls(ids) { ids.forEach(id => { const n = byId[id], el = L_nodes.querySelector(`[data-id="${id}"]`); if (n && el) el.setAttribute('transform', `translate(${r1(n.x)},${r1(n.y)})`); }); }
+function drawOverlay() {
+  let s = '';
+  sel.nodes.forEach(id => { const n = byId[id]; if (n) s += `<circle class="sel" cx="${r1(n.x)}" cy="${r1(n.y)}" r="${n.r + 7}"/>`; });
+  if (sel.edge) { const e = state.edges.find(x => x.id === sel.edge), g = e && edgeGeom(e); if (g) s += `<path class="sel-e" d="${pathD(g)}"/>`; }
+  if (sel.legend && state.legend.show) s += `<rect class="sel" x="${state.legend.x - 8}" y="${state.legend.y - 50}" width="300" height="726" rx="8"/>`;
+  if (connectFrom && byId[connectFrom]) {
+    const n = byId[connectFrom]; s += `<circle class="src" cx="${n.x}" cy="${n.y}" r="${n.r + 6}"/>`;
+    if (preview) s += `<line class="pre" x1="${n.x}" y1="${n.y}" x2="${r1(preview.x)}" y2="${r1(preview.y)}"/>`;
+  }
+  if (dropTarget && byId[dropTarget]) { const n = byId[dropTarget]; s += `<circle class="drop" cx="${n.x}" cy="${n.y}" r="${n.r + 6}"/>`; }
+  if (drag && drag.type === 'marquee') { const x = Math.min(drag.start.x, drag.cur.x), y = Math.min(drag.start.y, drag.cur.y); s += `<rect class="marq" x="${r1(x)}" y="${r1(y)}" width="${r1(Math.abs(drag.cur.x - drag.start.x))}" height="${r1(Math.abs(drag.cur.y - drag.start.y))}"/>`; }
+  L_over.innerHTML = s;
+}
+function renderAll() { reindex(); renderBoard(); renderEdges(); renderNodes(); renderLegend(); drawOverlay(); renderPanel(); }
+
+// ---------- history and dirty state ----------
+const snapshot = () => JSON.stringify({board: state.board, legend: state.legend, opts: state.opts, nodes: state.nodes, edges: state.edges});
+function pushHistory(snap) { undoS.push(snap); if (undoS.length > 60) undoS.shift(); redoS.length = 0; histUI(); }
+function edit(key, fn) {
+  const now = Date.now();
+  if (!(key && key === lastKey && now - lastT < 1500)) pushHistory(snapshot());
+  lastKey = key; lastT = now; fn(); markDirty();
+}
+function restore(snap) {
+  Object.assign(state, JSON.parse(snap)); reindex();
+  sel.nodes = new Set([...sel.nodes].filter(id => byId[id]));
+  if (sel.edge && !state.edges.some(e => e.id === sel.edge)) sel.edge = null;
+  renderAll(); markDirty();
+}
+function undo() { if (!undoS.length) return; redoS.push(snapshot()); restore(undoS.pop()); lastKey = null; histUI(); }
+function redo() { if (!redoS.length) return; undoS.push(snapshot()); restore(redoS.pop()); lastKey = null; histUI(); }
+function histUI() { $('b-undo').disabled = !undoS.length; $('b-redo').disabled = !redoS.length; }
+let draftT = 0;
+function markDirty() {
+  dirty = true; statusUI();
+  clearTimeout(draftT);
+  draftT = setTimeout(() => { try { localStorage.setItem(DKEY, JSON.stringify({base: embedded.savedAt, state})); } catch (e) { /* draft not kept */ } }, 600);
+}
+function statusUI(text) {
+  const el = $('status');
+  el.classList.toggle('dirty', dirty && !text);
+  el.textContent = text || (readOnly ? 'Read-only view' : dirty ? 'Unsaved changes' : (state.savedAt ? 'Saved version' : 'Starting layout'));
+}
+function capsUI() {
+  const b = $('b-save');
+  if (readOnly) { b.disabled = true; b.title = 'You can view this page but not save it. Export JSON to keep your edits.'; }
+  else if (CAP.artifact) { b.disabled = false; b.title = 'Save the layout, links and images as a new version of this page'; }
+  else { b.disabled = true; b.title = CAP.artifact === undefined ? 'Connecting…' : 'Saving works on the published page'; }
+}
+
+// ---------- selection and panel ----------
+function select(next) { sel = Object.assign({nodes: new Set(), edge: null, legend: false}, next); drawOverlay(); renderPanel(); }
+const panel = $('panel');
+const opt = (v, label, cur) => `<option value="${esc(v)}"${String(v) === String(cur) ? ' selected' : ''}>${esc(label)}</option>`;
+const nodeName = n => n ? `${oneLine(n.t === 'case' ? (n.name || n.label) : n.label) || '(no text)'}` : '?';
+function renderPanel() {
+  if (sel.edge) return panelEdge(state.edges.find(e => e.id === sel.edge));
+  if (sel.nodes.size === 1) return panelNode(byId[[...sel.nodes][0]]);
+  if (sel.nodes.size > 1) return panelMulti();
+  if (sel.legend) return panelLegend();
+  panelGraph();
+}
+function panelGraph() {
+  const cases = state.nodes.filter(n => n.t === 'case'), noPhoto = cases.filter(n => !n.img);
+  const count = t => state.nodes.filter(n => t.includes(n.t)).length;
+  panel.innerHTML = `
+  <section class="sec">
+    <div class="kicker">Overview</div>
+    <h2>Equilibrium prototype graph</h2>
+    <dl class="stats">
+      <div><dt>Prototypes</dt><dd>${count(['orig', 'core', 'adj'])}</dd></div>
+      <div><dt>In-Between States</dt><dd>${count(['ib'])}</dd></div>
+      <div><dt>Built cases</dt><dd>${cases.length}</dd></div>
+      <div><dt>Links</dt><dd>${state.edges.length}</dd></div>
+    </dl>
+  </section>
+  ${tray.length ? `
+  <section class="sec">
+    <h3>Photos to place (${tray.length})</h3>
+    <p class="note">These file names didn't match a case. Choose where each photo goes.</p>
+    <div class="tray">${tray.map(p => `<div class="trow"><img src="${p.url}" alt=""><div class="tcol"><span class="fname">${esc(p.name)}</span><select id="tray-${p.id}" data-f="tray" data-pid="${p.id}"><option value="">Place in…</option>${targetOptions()}</select></div><button data-act="tray-drop" data-pid="${p.id}" aria-label="Discard ${esc(p.name)}">×</button></div>`).join('')}</div>
+  </section>` : ''}
+  <section class="sec">
+    <h3>Built cases without a photo (${noPhoto.length} of ${cases.length})</h3>
+    ${noPhoto.length ? `<div class="chips">${noPhoto.map(n => `<button data-act="sel-node" data-id="${n.id}">${esc(nodeName(n))}</button>`).join('')}</div>` : '<p class="note">Every built case has a photo.</p>'}
+  </section>
+  <section class="sec">
+    <h3>Figure</h3>
+    <label class="chk"><input type="checkbox" id="g-captions" data-f="g-captions"${state.opts.captions ? ' checked' : ''}> Show names under photos</label>
+    <label class="chk"><input type="checkbox" id="g-legend" data-f="g-legend"${state.legend.show ? ' checked' : ''}> Show legend</label>
+    <label class="chk"><input type="checkbox" id="g-snap" data-f="g-snap"${state.opts.snap ? ' checked' : ''}> Snap to a 10 px grid while dragging</label>
+    <div class="row2">
+      <label class="field">Board width<input type="number" id="g-bw" data-f="g-bw" min="400" max="8000" step="10" value="${state.board.w}"></label>
+      <label class="field">Board height<input type="number" id="g-bh" data-f="g-bh" min="400" max="8000" step="10" value="${state.board.h}"></label>
+    </div>
+    <div class="btnrow"><button data-act="fit-board">Fit board to content</button></div>
+    <div class="field">Arrowheads on every link
+      <div class="btnrow"><button data-act="arrows" data-v="none">No arrowheads</button><button data-act="arrows" data-v="end">Arrowhead at end</button></div>
+    </div>
+    <label class="field">PNG export size
+      <select id="g-png" data-f="g-png">${[1, 2, 3, 4].map(k => opt(k, `${k}× (${state.board.w * k} × ${state.board.h * k} px)`, state.opts.pngScale)).join('')}</select>
+    </label>
+  </section>
+  <section class="sec">
+    <h3>How to edit</h3>
+    <ul class="tips">
+      <li>Drag a circle to move it. <kbd>Shift</kbd>-click adds circles to the selection; <kbd>Shift</kbd>-drag on empty space draws a selection box.</li>
+      <li><b>Connect</b> (<kbd>C</kbd>): click the start circle, then the end circle.</li>
+      <li>Click a link to change its ends, kind, command text, arrowhead or curve.</li>
+      <li>Drop an image file onto any circle, or select a circle and paste an image.</li>
+      <li><b>Photos…</b> adds many at once: download the photos from your Miro cards into one folder, then select them all. Each file goes to the case named in its file name, including the alternates.</li>
+      <li><kbd>Delete</kbd> removes the selection. <kbd>Ctrl</kbd>/<kbd>⌘</kbd> <kbd>Z</kbd> undoes. Arrow keys nudge.</li>
+      <li><b>Save version</b> keeps everything in this page for next time. Edits are also kept in this browser until you save.</li>
+    </ul>
+  </section>`;
+}
+function panelNode(n) {
+  if (!n) return panelGraph();
+  const src = imgSrc(n), isCase = n.t === 'case', isProto = ['orig', 'core', 'adj'].includes(n.t);
+  const links = state.edges.filter(e => e.a === n.id || e.b === n.id);
+  const q = encodeURIComponent(n.name || oneLine(n.label));
+  panel.innerHTML = `
+  <section class="sec">
+    <div class="kicker">${esc(TYPE_NAME[n.t])}</div>
+    <h2 id="p-title">${esc(nodeName(n))}</h2>
+    <label class="field">Type<select id="n-t" data-f="t">${TYPES.map(([v, l]) => opt(v, l, n.t)).join('')}</select></label>
+    ${isCase ? `
+    <label class="field">Case name<input type="text" id="n-name" data-f="name" value="${esc(n.name || '')}"></label>
+    <label class="field">Year<input type="text" id="n-year" data-f="year" value="${esc(n.year || '')}"></label>
+    ${n.meta ? `<p class="meta">${esc(n.meta)}</p>` : ''}` : ''}
+    <label class="field">Text in the circle<textarea id="n-label" data-f="label" rows="3">${esc(n.label || '')}</textarea><span class="note">Each line break starts a new line in the figure.</span></label>
+    <label class="field"><span class="lab">Size <span class="v mono" id="v-r">${n.r}</span></span><input type="range" id="n-r" data-f="r" min="18" max="120" step="1" value="${n.r}"></label>
+  </section>
+  <section class="sec">
+    <h3>Image</h3>
+    <div class="imgrow">
+      <div class="thumb">${src ? `<img src="${esc(src)}" alt="">` : 'No image'}</div>
+      <div class="btnrow">
+        <label class="btn"><input type="file" id="n-file" data-f="file" accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml" hidden>${src ? 'Replace image' : 'Upload image'}</label>
+        ${src ? '<button data-act="img-remove">Remove image</button>' : ''}
+      </div>
+    </div>
+    ${src ? `
+    <label class="field"><span class="lab">Photo zoom <span class="v mono" id="v-iz">${(n.img.z || 1).toFixed(2)}</span></span><input type="range" id="n-iz" data-f="iz" min="1" max="4" step="0.02" value="${n.img.z || 1}"></label>
+    <div class="row2">
+      <label class="field">Move left / right<input type="range" id="n-ix" data-f="ix" min="-1.5" max="1.5" step="0.02" value="${n.img.ox || 0}"></label>
+      <label class="field">Move up / down<input type="range" id="n-iy" data-f="iy" min="-1.5" max="1.5" step="0.02" value="${n.img.oy || 0}"></label>
+    </div>` : ''}
+    ${n.img && n.img.credit ? `<p class="note">Photo: ${esc(n.img.credit.author || 'unknown author')} · ${esc(n.img.credit.license || 'licence not stated')} · <a href="${esc(n.img.credit.page)}" target="_blank" rel="noopener">source</a>${n.img.credit.from ? ` · ${esc(n.img.credit.from)}` : ''}</p>` : ''}
+    <p class="note">You can also drop an image file onto any circle, or select a circle and paste an image (<kbd>Ctrl</kbd>/<kbd>⌘</kbd> <kbd>V</kbd>).</p>
+    ${isCase ? `<p class="note links">Find photos: <a href="https://commons.wikimedia.org/w/index.php?search=${q}&title=Special:MediaSearch&type=image" target="_blank" rel="noopener">Wikimedia Commons</a> · <a href="https://www.google.com/search?tbm=isch&q=${q}" target="_blank" rel="noopener">Google Images</a>. Check each photo's licence before it goes into the paper.</p>` : `
+    <label class="field">Diagram${src ? ' (shown when there is no image)' : ''}<select id="n-glyph" data-f="glyph">${GLYPHS.map(([v, l]) => opt(v, l, n.glyph || '')).join('')}</select></label>`}
+    ${n.t === 'ib' ? `<label class="chk"><input type="checkbox" id="n-cap" data-f="cap"${n.cap ? ' checked' : ''}> Show the text under the circle</label>` : ''}
+    ${isProto ? '<p class="note">With an image, the prototype name moves under the circle.</p>' : ''}
+  </section>
+  ${isCase && (n.alts || []).length ? `
+  <section class="sec">
+    <h3>Swap in another case for this branch</h3>
+    <div class="chips">${n.alts.map((a, i) => `<button data-act="alt" data-i="${i}" title="${esc(a.meta || '')}">${esc(a.name)}${a.year ? ` <small>${esc(a.year)}</small>` : ''}</button>`).join('')}</div>
+    <p class="note">The current case moves into this list, with its photo.</p>
+  </section>` : ''}
+  <section class="sec">
+    <h3>Links (${links.length})</h3>
+    <div class="list">${links.map(e => { const out = e.a === n.id, o = byId[out ? e.b : e.a]; return `<button data-act="sel-edge" data-id="${e.id}">${out ? '→' : '←'} ${esc(nodeName(o))}${e.l ? ` <span class="cmd">${esc(e.l)}</span>` : ''}</button>`; }).join('') || '<p class="note">No links yet.</p>'}</div>
+    <div class="btnrow"><button data-act="connect-from">Add a link from here</button></div>
+  </section>
+  <section class="sec">
+    <div class="btnrow"><button data-act="dup">Duplicate</button><button class="danger" data-act="del">Delete circle</button></div>
+  </section>`;
+}
+function panelEdge(e) {
+  if (!e) return panelGraph();
+  const nodeOpts = cur => state.nodes.map(n => opt(n.id, `${TYPE_NAME[n.t]} · ${nodeName(n)}`, cur)).join('');
+  panel.innerHTML = `
+  <section class="sec">
+    <div class="kicker">Link</div>
+    <h2 id="p-title">${esc(nodeName(byId[e.a]))} → ${esc(nodeName(byId[e.b]))}</h2>
+    <label class="field">From<select id="e-a" data-f="ea">${nodeOpts(e.a)}</select></label>
+    <label class="field">To<select id="e-b" data-f="eb">${nodeOpts(e.b)}</select></label>
+    <div class="btnrow"><button data-act="swap">Reverse direction</button></div>
+  </section>
+  <section class="sec">
+    <label class="field">Kind<select id="e-k" data-f="ek">${opt('tr', 'Transformation (grey bar)', e.k)}${opt('mat', 'Materialization (black)', e.k)}${opt('comb', 'Combination (thin line)', e.k)}</select></label>
+    <label class="field">Command text<input type="text" id="e-l" data-f="el" value="${esc(e.l || '')}" placeholder="e.g. rotate radial"></label>
+    <label class="field">Arrowhead<select id="e-ar" data-f="ear">${opt('none', 'None', e.ar)}${opt('end', 'At the end', e.ar)}${opt('start', 'At the start', e.ar)}${opt('both', 'Both ends', e.ar)}</select></label>
+    <label class="field"><span class="lab">Curve <span class="v mono" id="v-bend">${(+e.bend || 0).toFixed(2)}</span></span><input type="range" id="e-bend" data-f="ebend" min="-1" max="1" step="0.02" value="${+e.bend || 0}"></label>
+    <label class="field"><span class="lab">Text position along the link <span class="v mono" id="v-lp">${(e.lp ?? .5).toFixed(2)}</span></span><input type="range" id="e-lp" data-f="elp" min="0.08" max="0.92" step="0.01" value="${e.lp ?? .5}"></label>
+  </section>
+  <section class="sec">
+    <div class="btnrow"><button data-act="sel-node" data-id="${e.a}">Select start circle</button><button data-act="sel-node" data-id="${e.b}">Select end circle</button></div>
+    <div class="btnrow"><button class="danger" data-act="del">Delete link</button></div>
+  </section>`;
+}
+function panelMulti() {
+  panel.innerHTML = `<section class="sec"><div class="kicker">Selection</div><h2>${sel.nodes.size} circles selected</h2>
+  <p class="note">Drag any of them to move the group, or use the arrow keys.</p>
+  <div class="btnrow"><button class="danger" data-act="del">Delete ${sel.nodes.size} circles</button></div></section>`;
+}
+function panelLegend() {
+  panel.innerHTML = `<section class="sec"><div class="kicker">Legend</div><h2>Legend</h2><p class="note">Drag it to move it. It is drawn in the exported PNG and SVG.</p>
+  <div class="btnrow"><button data-act="hide-legend">Hide legend</button></div></section>`;
+}
+
+// ---------- panel input ----------
+const curNode = () => sel.nodes.size === 1 ? byId[[...sel.nodes][0]] : null;
+const curEdge = () => sel.edge ? state.edges.find(e => e.id === sel.edge) : null;
+function setTitle() { const t = $('p-title'); if (!t) return; const e = curEdge(), n = curNode(); t.textContent = e ? `${nodeName(byId[e.a])} → ${nodeName(byId[e.b])}` : nodeName(n); }
+panel.addEventListener('input', ev => {
+  const f = ev.target.dataset.f; if (!f) return;
+  const v = ev.target.value, n = curNode(), e = curEdge();
+  if (n) {
+    const id = n.id;
+    if (f === 'name') edit('name' + id, () => { n.name = v; n.label = wrap(v); $('n-label').value = n.label; });
+    else if (f === 'year') edit('year' + id, () => { n.year = v; });
+    else if (f === 'label') edit('label' + id, () => { n.label = v; });
+    else if (f === 'r') { edit('r' + id, () => { n.r = +v; }); $('v-r').textContent = v; renderEdges(); }
+    else if (f === 'iz' || f === 'ix' || f === 'iy') { edit(f + id, () => { n.img[{iz: 'z', ix: 'ox', iy: 'oy'}[f]] = +v; }); if (f === 'iz') $('v-iz').textContent = (+v).toFixed(2); }
+    else return;
+    updateNode(id); drawOverlay(); setTitle(); return;
+  }
+  if (e) {
+    if (f === 'el') edit('el' + e.id, () => { e.l = v; });
+    else if (f === 'ebend') { edit('bend' + e.id, () => { e.bend = +v; }); $('v-bend').textContent = (+v).toFixed(2); }
+    else if (f === 'elp') { edit('lp' + e.id, () => { e.lp = +v; }); $('v-lp').textContent = (+v).toFixed(2); }
+    else return;
+    renderEdges(); drawOverlay(); return;
+  }
+});
+panel.addEventListener('change', ev => {
+  const f = ev.target.dataset.f; if (!f) return;
+  const t = ev.target, v = t.value, n = curNode(), e = curEdge();
+  if (f === 'tray') { if (v) placeTray(t.dataset.pid, v); return; }
+  if (f === 'file') { const file = t.files && t.files[0]; t.value = ''; if (file && n) setNodeImage(n.id, file); return; }
+  if (n) {
+    if (f === 't') edit(null, () => { n.t = v; if (v === 'case') { n.name = n.name || oneLine(n.label); n.alts = n.alts || []; } });
+    else if (f === 'glyph') edit(null, () => { n.glyph = v; });
+    else if (f === 'cap') edit(null, () => { n.cap = t.checked; });
+    else return;
+    updateNode(n.id); renderEdges(); drawOverlay(); renderPanel(); return;
+  }
+  if (e) {
+    if (f === 'ea' || f === 'eb') {
+      const other = f === 'ea' ? e.b : e.a;
+      if (v === other) { toast('A link needs two different circles.'); renderPanel(); return; }
+      edit(null, () => { e[f === 'ea' ? 'a' : 'b'] = v; });
+    } else if (f === 'ek') edit(null, () => { if (v === 'mat' && (!e.l || e.l === 'command')) e.l = 'Materialize'; if (v !== 'mat' && e.l === 'Materialize') e.l = v === 'comb' ? '' : 'command'; e.k = v; });
+    else if (f === 'ear') edit(null, () => { e.ar = v; });
+    else return;
+    renderEdges(); drawOverlay(); renderPanel(); return;
+  }
+  if (f === 'g-captions') { edit(null, () => { state.opts.captions = t.checked; }); renderNodes(); drawOverlay(); }
+  else if (f === 'g-legend') { edit(null, () => { state.legend.show = t.checked; }); renderLegend(); }
+  else if (f === 'g-snap') edit(null, () => { state.opts.snap = t.checked; });
+  else if (f === 'g-png') edit(null, () => { state.opts.pngScale = +v; });
+  else if (f === 'g-bw' || f === 'g-bh') { const x = Math.max(400, Math.min(8000, Math.round(+v) || 0)); if (x) { edit(null, () => { state.board[f === 'g-bw' ? 'w' : 'h'] = x; }); renderBoard(); } renderPanel(); }
+});
+
+// ---------- actions ----------
+function addNode(kind) {
+  const cx = cam.x + cam.w / 2 + (Math.random() - .5) * 60, cy = cam.y + cam.h / 2 + (Math.random() - .5) * 60;
+  const base = {id: uid('n'), x: Math.round(cx), y: Math.round(cy)};
+  const n = kind === 'proto' ? {...base, t: 'adj', r: 40, glyph: 'AR', label: 'New\nprototype'}
+    : kind === 'ib' ? {...base, t: 'ib', r: 35, glyph: '', label: 'New state', cap: true}
+    : {...base, t: 'case', r: 49, label: 'New case', name: 'New case', year: '', meta: '', alts: []};
+  edit(null, () => { state.nodes.push(n); reindex(); });
+  renderNodes(); select({nodes: new Set([n.id])});
+  toast(`Added ${TYPE_NAME[n.t].toLowerCase()} in the middle of the view. Drag it into place.`);
+}
+function createEdge(a, b) {
+  const ex = state.edges.find(e => e.a === a && e.b === b);
+  if (ex) { select({edge: ex.id}); toast('These two circles are already linked.'); return; }
+  const A_ = byId[a], B_ = byId[b];
+  const k = B_.t === 'case' ? 'mat' : (A_.t === 'orig' && B_.t === 'core') ? 'comb' : 'tr';
+  const e = {id: uid('e'), a, b, k, l: k === 'mat' ? 'Materialize' : k === 'comb' ? '' : 'command', ar: state.opts.arrow || 'none', bend: 0, lp: .5};
+  edit(null, () => { state.edges.push(e); });
+  renderEdges(); renderNodes(); select({edge: e.id});
+}
+function deleteSelection() {
+  if (sel.edge) { const id = sel.edge; edit(null, () => { state.edges = state.edges.filter(e => e.id !== id); }); sel.edge = null; }
+  else if (sel.nodes.size) { const ids = new Set(sel.nodes); edit(null, () => { state.nodes = state.nodes.filter(n => !ids.has(n.id)); state.edges = state.edges.filter(e => !ids.has(e.a) && !ids.has(e.b)); }); sel.nodes = new Set(); }
+  else if (sel.legend) { edit(null, () => { state.legend.show = false; }); sel.legend = false; }
+  else return;
+  renderAll(); toast('Deleted. Undo with Ctrl+Z or ⌘Z.');
+}
+function setMode(m) {
+  mode = m; connectFrom = null; preview = null;
+  $('b-select').setAttribute('aria-pressed', String(m === 'select')); $('b-connect').setAttribute('aria-pressed', String(m === 'connect'));
+  cv.classList.toggle('connect', m === 'connect'); $('hint').hidden = m !== 'connect'; drawOverlay();
+}
+function contentBounds() {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  state.nodes.forEach(n => { const below = (n.t === 'case' && n.img && state.opts.captions) || (n.t === 'ib' && n.cap) || (['orig', 'core', 'adj'].includes(n.t) && n.img) ? 52 : 0; x0 = Math.min(x0, n.x - n.r); y0 = Math.min(y0, n.y - n.r); x1 = Math.max(x1, n.x + n.r); y1 = Math.max(y1, n.y + n.r + below); });
+  if (state.legend.show) { x0 = Math.min(x0, state.legend.x - 4); y0 = Math.min(y0, state.legend.y - 46); x1 = Math.max(x1, state.legend.x + 292); y1 = Math.max(y1, state.legend.y + 672); }
+  return {x0, y0, x1, y1};
+}
+function fitBoard() {
+  if (!state.nodes.length) return;
+  const b = contentBounds(), m = 50, dx = Math.round(m - b.x0), dy = Math.round(m - b.y0);
+  edit(null, () => { state.nodes.forEach(n => { n.x += dx; n.y += dy; }); state.legend.x += dx; state.legend.y += dy; state.board.w = Math.ceil(b.x1 - b.x0 + 2 * m); state.board.h = Math.ceil(b.y1 - b.y0 + 2 * m); });
+  renderAll(); fit();
+}
+function swapAlt(i) {
+  const n = curNode(); if (!n || !n.alts || !n.alts[i]) return;
+  edit(null, () => {
+    const alt = n.alts[i];
+    const cur = {name: n.name, year: n.year, meta: n.meta, label: n.label}; if (n.img) cur.img = n.img;
+    n.name = alt.name; n.year = alt.year || ''; n.meta = alt.meta || ''; n.label = alt.label || wrap(alt.name);
+    if (alt.img) n.img = alt.img; else delete n.img;
+    n.alts[i] = cur;
+  });
+  updateNode(n.id); renderPanel();
+}
+document.getElementById('root').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-act]'); if (!b || b.disabled) return;
+  const act = b.dataset.act, n = curNode(), e = curEdge();
+  switch (act) {
+    case 'mode-select': setMode('select'); break;
+    case 'mode-connect': setMode(mode === 'connect' ? 'select' : 'connect'); break;
+    case 'add-proto': addNode('proto'); break;
+    case 'add-ib': addNode('ib'); break;
+    case 'add-case': addNode('case'); break;
+    case 'undo': undo(); break;
+    case 'redo': redo(); break;
+    case 'zoom-in': { const r = cv.getBoundingClientRect(); zoomAt(1 / 1.25, r.left + r.width / 2, r.top + r.height / 2); break; }
+    case 'zoom-out': { const r = cv.getBoundingClientRect(); zoomAt(1.25, r.left + r.width / 2, r.top + r.height / 2); break; }
+    case 'zoom-fit': fit(); break;
+    case 'export-png': exportPNG(); break;
+    case 'export-svg': exportSVGFile(); break;
+    case 'export-json': offer('prototype-graph.json', new Blob([JSON.stringify(state, null, 1)], {type: 'application/json'})); break;
+    case 'save': save(); break;
+    case 'sel-node': select({nodes: new Set([b.dataset.id])}); break;
+    case 'sel-edge': select({edge: b.dataset.id}); break;
+    case 'del': deleteSelection(); break;
+    case 'dup': if (n) { const c = JSON.parse(JSON.stringify(n)); c.id = uid('n'); c.x += 40; c.y += 40; edit(null, () => { state.nodes.push(c); reindex(); }); renderNodes(); select({nodes: new Set([c.id])}); } break;
+    case 'img-remove': if (n) { edit(null, () => { delete n.img; }); updateNode(n.id); renderPanel(); } break;
+    case 'alt': swapAlt(+b.dataset.i); break;
+    case 'connect-from': if (n) { setMode('connect'); connectFrom = n.id; drawOverlay(); } break;
+    case 'swap': if (e) { edit(null, () => { [e.a, e.b] = [e.b, e.a]; }); renderEdges(); drawOverlay(); renderPanel(); } break;
+    case 'arrows': { const v = b.dataset.v; edit(null, () => { state.edges.forEach(x => { x.ar = v; }); state.opts.arrow = v; }); renderEdges(); toast(v === 'none' ? 'Removed arrowheads from every link.' : 'Added an arrowhead to the end of every link.'); break; }
+    case 'fit-board': fitBoard(); break;
+    case 'tray-drop': { const p = tray.find(x => x.id === b.dataset.pid); if (p) { URL.revokeObjectURL(p.url); tray = tray.filter(x => x !== p); renderPanel(); } break; }
+    case 'hide-legend': edit(null, () => { state.legend.show = false; }); renderLegend(); select({}); break;
+  }
+});
+$('f-import').addEventListener('change', async ev => {
+  const file = ev.target.files && ev.target.files[0]; ev.target.value = ''; if (!file) return;
+  try {
+    const d = JSON.parse(await file.text());
+    if (!Array.isArray(d.nodes) || !Array.isArray(d.edges)) throw new Error('shape');
+    const ids = new Set(d.nodes.map(n => n.id));
+    d.edges = d.edges.filter(e => ids.has(e.a) && ids.has(e.b));
+    edit(null, () => {
+      state.nodes = d.nodes; state.edges = d.edges;
+      state.board = d.board || state.board; state.legend = d.legend || state.legend;
+      state.opts = Object.assign({}, state.opts, d.opts || {});
+    });
+    select({}); renderAll(); fit(); toast(`Loaded ${d.nodes.length} circles and ${d.edges.length} links.`);
+  } catch (err) { toast('That file is not a graph exported from this editor.'); }
+});
+
+// ---------- pointer interaction ----------
+cv.addEventListener('pointerdown', ev => {
+  if (ev.pointerType === 'mouse' && ev.button !== 0 && ev.button !== 1) return;
+  const p = toWorld(ev);
+  const nodeEl = ev.target.closest('.nd'), edgeEl = ev.target.closest('[data-e]'), legEl = ev.target.closest('[data-legend]');
+  try { cv.setPointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
+  if (ev.button === 1 || (mode === 'connect' && !nodeEl)) { drag = {type: 'pan', sx: ev.clientX, sy: ev.clientY, cx: cam.x, cy: cam.y, moved: false}; return; }
+  if (mode === 'connect') {
+    const id = nodeEl.dataset.id;
+    if (!connectFrom) { connectFrom = id; preview = p; drawOverlay(); }
+    else if (connectFrom !== id) { const a = connectFrom; connectFrom = null; preview = null; createEdge(a, id); }
+    return;
+  }
+  if (nodeEl) {
+    const id = nodeEl.dataset.id;
+    if (ev.shiftKey || ev.metaKey || ev.ctrlKey) {
+      const s = new Set(sel.nodes); s.has(id) ? s.delete(id) : s.add(id); select({nodes: s});
+      if (!s.has(id)) return;
+    } else if (!sel.nodes.has(id)) select({nodes: new Set([id])});
+    drag = {type: 'nodes', start: p, orig: [...sel.nodes].map(i => ({id: i, x: byId[i].x, y: byId[i].y})), moved: false, before: snapshot()};
+  } else if (edgeEl) {
+    select({edge: edgeEl.dataset.e});
+  } else if (legEl) {
+    select({legend: true});
+    drag = {type: 'legend', start: p, ox: state.legend.x, oy: state.legend.y, moved: false, before: snapshot()};
+  } else if (ev.shiftKey) {
+    drag = {type: 'marquee', start: p, cur: p};
+  } else {
+    drag = {type: 'pan', sx: ev.clientX, sy: ev.clientY, cx: cam.x, cy: cam.y, moved: false};
+  }
+});
+cv.addEventListener('pointermove', ev => {
+  if (mode === 'connect' && connectFrom) { preview = toWorld(ev); drawOverlay(); }
+  if (!drag) return;
+  if (drag.type === 'pan') {
+    const r = cv.getBoundingClientRect(), dx = ev.clientX - drag.sx, dy = ev.clientY - drag.sy;
+    if (!drag.moved && Math.hypot(dx, dy) < 3) return;
+    drag.moved = true; cv.classList.add('panning');
+    cam.x = drag.cx - dx / r.width * cam.w; cam.y = drag.cy - dy / r.height * cam.h; applyCam(); return;
+  }
+  const p = toWorld(ev);
+  if (drag.type === 'marquee') { drag.cur = p; drawOverlay(); return; }
+  const dx = p.x - drag.start.x, dy = p.y - drag.start.y;
+  if (!drag.moved && Math.hypot(dx, dy) * (cv.clientWidth / cam.w) < 3) return;
+  drag.moved = true;
+  const snap = v => state.opts.snap ? Math.round(v / 10) * 10 : Math.round(v);
+  if (drag.type === 'nodes') {
+    drag.orig.forEach(o => { const n = byId[o.id]; n.x = snap(o.x + dx); n.y = snap(o.y + dy); });
+    moveNodeEls(drag.orig.map(o => o.id)); renderEdges(); drawOverlay();
+  } else if (drag.type === 'legend') {
+    state.legend.x = snap(drag.ox + dx); state.legend.y = snap(drag.oy + dy); renderLegend(); drawOverlay();
+  }
+});
+function endDrag() {
+  if (!drag) return;
+  const d = drag; drag = null; cv.classList.remove('panning');
+  if ((d.type === 'nodes' || d.type === 'legend') && d.moved) { pushHistory(d.before); lastKey = null; markDirty(); if (d.type === 'nodes') renderNodes(); }
+  else if (d.type === 'pan' && !d.moved && mode === 'select') select({});
+  else if (d.type === 'marquee') {
+    const x0 = Math.min(d.start.x, d.cur.x), x1 = Math.max(d.start.x, d.cur.x), y0 = Math.min(d.start.y, d.cur.y), y1 = Math.max(d.start.y, d.cur.y);
+    const s = new Set(sel.nodes); state.nodes.forEach(n => { if (n.x >= x0 && n.x <= x1 && n.y >= y0 && n.y <= y1) s.add(n.id); });
+    select({nodes: s});
+  }
+  drawOverlay();
+}
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+cv.addEventListener('dblclick', ev => { if (nodeAt(ev.clientX, ev.clientY)) { const t = $('n-label'); if (t) { t.focus(); t.select(); } } });
+cv.addEventListener('wheel', ev => {
+  ev.preventDefault();
+  const k = Math.exp(ev.deltaY * (ev.deltaMode === 1 ? 0.05 : 0.0015));
+  zoomAt(k, ev.clientX, ev.clientY);
+}, {passive: false});
+
+// ---------- keyboard ----------
+document.addEventListener('keydown', ev => {
+  const tag = (ev.target.tagName || '').toLowerCase();
+  if (['input', 'textarea', 'select'].includes(tag) || ev.target.isContentEditable) { if (ev.key === 'Escape') ev.target.blur(); return; }
+  const mod = ev.ctrlKey || ev.metaKey;
+  if (mod && ev.key.toLowerCase() === 'z') { ev.preventDefault(); ev.shiftKey ? redo() : undo(); return; }
+  if (mod && ev.key.toLowerCase() === 'y') { ev.preventDefault(); redo(); return; }
+  if (mod) return;
+  if (ev.key === 'Delete' || ev.key === 'Backspace') { ev.preventDefault(); deleteSelection(); }
+  else if (ev.key === 'Escape') { if (mode === 'connect') setMode('select'); else select({}); }
+  else if (ev.key === 'c' || ev.key === 'C') setMode(mode === 'connect' ? 'select' : 'connect');
+  else if (ev.key === 'v' || ev.key === 'V') setMode('select');
+  else if (ev.key === 'f' || ev.key === 'F') fit();
+  else if (ev.key.startsWith('Arrow') && (sel.nodes.size || sel.legend)) {
+    ev.preventDefault();
+    const st = ev.shiftKey ? 10 : 1, dx = ev.key === 'ArrowLeft' ? -st : ev.key === 'ArrowRight' ? st : 0, dy = ev.key === 'ArrowUp' ? -st : ev.key === 'ArrowDown' ? st : 0;
+    edit('nudge', () => { sel.nodes.forEach(id => { byId[id].x += dx; byId[id].y += dy; }); if (sel.legend) { state.legend.x += dx; state.legend.y += dy; } });
+    moveNodeEls([...sel.nodes]); renderEdges(); renderLegend(); drawOverlay();
+  }
+});
+
+// ---------- images: upload, drop, paste ----------
+const toDataURL = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
+async function prepImage(file, max) {
+  if (file.type === 'image/svg+xml') { if (file.size > 2e6) throw new Error('svg-large'); return file; }
+  if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) throw new Error('type');
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const png = file.type === 'image/png';
+  return await new Promise(res => c.toBlob(res, png ? 'image/png' : 'image/jpeg', 0.88));
+}
+async function storeImage(file) {
+  const assets = CAP.assets;
+  const blob = await prepImage(file, assets ? 1400 : 900);
+  if (assets) {
+    try { const r = await assets.upload(blob, {type: blob.type || file.type}); return {asset: r.id}; }
+    catch (err) { if (err && err.code === 'too_large') throw new Error('large'); }
+  }
+  return {src: await toDataURL(blob)};
+}
+async function setNodeImage(id, file) {
+  if (!byId[id]) return;
+  statusUI('Adding image…');
+  let img = null;
+  try { img = await storeImage(file); } catch (err) {
+    statusUI(); toast(err && err.message === 'large' ? 'That image is too large to store. Try a smaller one.' : err && err.message === 'type' ? 'Use a PNG, JPG, WebP, GIF or SVG image.' : err && err.message === 'svg-large' ? 'SVG images must be under 2 MB.' : 'This image could not be read. Try saving it as PNG or JPG first.'); return;
+  }
+  const n = byId[id]; if (!n) { statusUI(); return; }
+  edit(null, () => { n.img = Object.assign({z: 1, ox: 0, oy: 0}, img); });
+  updateNode(id); drawOverlay(); statusUI();
+  if (curNode() && curNode().id === id) renderPanel();
+  toast(`Image placed in “${nodeName(n)}”.`);
+}
+// batch photos: match file names to case names (figure cases and their alternates)
+let tray = [];
+const PSTOP = new Set(['the', 'of', 'de', 'del', 'des', 'du', 'la', 'and', 'bridge', 'building', 'tower', 'center', 'centre', 'roof', 'main', 'house', 'museum', 'national', 'church', 'arena', 'stadium', 'airport', 'hall', 'olympic', 'jpg', 'jpeg', 'png', 'webp', 'from', 'view', 'photo', 'with', 'img', 'dsc', 'file', 'original']);
+const PALIAS = {'30 St Mary Axe': ['gherkin', 'swiss re'], 'Gottlieb-Daimler-Stadion roof': ['mercedes benz arena', 'neckarstadion'], 'Casa Milà attic': ['pedrera'], 'Los Manantiales': ['xochimilco'], 'Spaceship Earth': ['epcot'], 'Hong Kong–Zhuhai–Macau Bridge': ['hzmb'], 'Seoul Olympic Gymnastics Arena': ['kspo', 'gymnastics'], 'Pavilhão de Portugal': ['portuguese pavilion', 'portugal pavilion'], 'Beijing National Stadium': ['birds nest', 'bird s nest'], 'Grande Arche': ['arche de la defense'], 'HSBC Main Building': ['hsbc'], 'Shanghai Pudong Airport T1': ['pudong'], 'S. R. Crown Hall': ['crown hall'], 'J. S. Dorton Arena': ['dorton']};
+const normT = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const ptoks = s => normT(s).split(' ').filter(w => w.length > 2 && !PSTOP.has(w));
+function photoTargets() {
+  const T = [];
+  state.nodes.forEach(n => { if (n.t !== 'case') return; T.push({name: n.name || oneLine(n.label), node: n.id, alt: -1}); (n.alts || []).forEach((a, i) => T.push({name: a.name, node: n.id, alt: i})); });
+  return T;
+}
+function matchFile(fname, T, DF) {
+  const f = ' ' + normT(fname.replace(/\.[a-z0-9]+$/i, '')) + ' ', ft = new Set(f.trim().split(' '));
+  let best = null, bs = 0, second = 0;
+  for (const t of T) {
+    let sc = 0;
+    (PALIAS[t.name] || []).forEach(a => { if (f.includes(' ' + a + ' ')) sc += 3; });
+    if (f.includes(' ' + normT(t.name) + ' ')) sc += 3;
+    ptoks(t.name).forEach(w => { if (ft.has(w)) sc += DF[w] === 1 ? 2 : 0.6; });
+    if (sc > bs) { second = bs; bs = sc; best = t; } else if (sc > second) second = sc;
+  }
+  return bs >= 2 && bs > second ? best : null;
+}
+function applyImg(t, img) { const n = byId[t.node]; if (!n) return; const v = Object.assign({z: 1, ox: 0, oy: 0}, img); if (t.alt < 0) n.img = v; else if (n.alts && n.alts[t.alt]) n.alts[t.alt].img = v; }
+function targetOptions() {
+  const T = photoTargets(), mark = t => { const n = byId[t.node], has = t.alt < 0 ? n.img : n.alts[t.alt].img; return has ? ' (has a photo)' : ''; };
+  return `<optgroup label="Cases in the figure">${T.filter(t => t.alt < 0).map(t => `<option value="${t.node}|-1">${esc(t.name + mark(t))}</option>`).join('')}</optgroup>`
+    + `<optgroup label="Alternates (shown after a swap)">${T.filter(t => t.alt >= 0).map(t => `<option value="${t.node}|${t.alt}">${esc(t.name + mark(t))}</option>`).join('')}</optgroup>`;
+}
+async function importPhotos(files) {
+  files = files.filter(f => /^image\/(png|jpeg|webp|gif)$/.test(f.type));
+  if (!files.length) { toast('Choose PNG, JPG, WebP or GIF photos.'); return; }
+  const T = photoTargets(), DF = {};
+  T.forEach(t => new Set(ptoks(t.name)).forEach(w => { DF[w] = (DF[w] || 0) + 1; }));
+  pushHistory(snapshot()); lastKey = null;
+  let placed = 0; const taken = new Set(), left = [];
+  for (let i = 0; i < files.length; i++) {
+    statusUI(`Adding photos: ${i + 1} of ${files.length}…`);
+    const f = files[i], t = matchFile(f.name, T, DF), key = t && t.node + '|' + t.alt;
+    if (!t || taken.has(key)) { left.push(f); continue; }
+    try { applyImg(t, await storeImage(f)); taken.add(key); placed++; if (t.alt < 0) updateNode(t.node); }
+    catch (err) { left.push(f); }
+  }
+  left.forEach(f => tray.push({id: uid('p'), file: f, url: URL.createObjectURL(f), name: f.name}));
+  markDirty(); statusUI(); select({});
+  toast(`Placed ${placed} photo${placed === 1 ? '' : 's'}.` + (left.length ? ` ${left.length} need a case chosen in the side panel.` : ''));
+}
+async function placeTray(pid, val) {
+  const p = tray.find(x => x.id === pid); if (!p) return;
+  const [node, alt] = val.split('|'), t = {node, alt: +alt};
+  statusUI('Adding image…');
+  try { const img = await storeImage(p.file); edit(null, () => applyImg(t, img)); }
+  catch (err) { statusUI(); toast('This image could not be read. Try saving it as PNG or JPG first.'); return; }
+  URL.revokeObjectURL(p.url); tray = tray.filter(x => x !== p);
+  if (t.alt < 0) updateNode(node); statusUI(); renderPanel();
+}
+$('f-photos').addEventListener('change', ev => { const fs = [...(ev.target.files || [])]; ev.target.value = ''; importPhotos(fs); });
+const stage = $('stage');
+stage.addEventListener('dragover', ev => {
+  if (!ev.dataTransfer || ![...ev.dataTransfer.types].includes('Files')) return;
+  ev.preventDefault(); const id = nodeAt(ev.clientX, ev.clientY);
+  ev.dataTransfer.dropEffect = id ? 'copy' : 'none';
+  if (id !== dropTarget) { dropTarget = id; drawOverlay(); }
+});
+stage.addEventListener('dragleave', ev => { if (!stage.contains(ev.relatedTarget)) { dropTarget = null; drawOverlay(); } });
+stage.addEventListener('drop', ev => {
+  ev.preventDefault();
+  const id = nodeAt(ev.clientX, ev.clientY); dropTarget = null; drawOverlay();
+  const files = ev.dataTransfer ? [...ev.dataTransfer.files].filter(f => f.type.startsWith('image/')) : [];
+  if (!files.length) return;
+  if (files.length > 1 || !id) { importPhotos(files); return; }
+  select({nodes: new Set([id])}); setNodeImage(id, files[0]);
+});
+document.addEventListener('paste', ev => {
+  const file = ev.clipboardData && [...ev.clipboardData.files].find(f => f.type.startsWith('image/'));
+  if (!file) return;
+  const n = curNode();
+  if (!n) { toast('Select one circle first, then paste the image.'); return; }
+  ev.preventDefault(); setNodeImage(n.id, file);
+});
+
+// ---------- export ----------
+async function inlineImages() {
+  const out = {}; let failed = 0;
+  for (const n of state.nodes) {
+    const src = imgSrc(n); if (!src) continue;
+    if (src.startsWith('data:')) { out[n.id] = src; continue; }
+    try { const r = await fetch(src); if (!r.ok) throw 0; out[n.id] = await toDataURL(await r.blob()); } catch (e) { out[n.id] = null; failed++; }
+  }
+  return {out, failed};
+}
+async function buildSVG() {
+  const {out, failed} = await inlineImages();
+  const W = state.board.w, H = state.board.h;
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs><style>${figCSS('')}</style>${MARKERS}</defs><rect width="${W}" height="${H}" fill="#ffffff"/><g id="links">${state.edges.map(e => edgeMarkup(e, false)).join('')}</g><g id="nodes">${state.nodes.map(n => nodeMarkup(n, true, n.img ? out[n.id] : null)).join('')}</g>${legendMarkup(false)}</svg>`;
+  if (failed) toast(`${failed} image${failed > 1 ? 's' : ''} could not be included in the export.`);
+  return svg;
+}
+async function offer(filename, blob) {
+  const dl = CAP.downloads;
+  if (dl) {
+    try { await dl.save({filename, data: blob}); toast(`Saved ${filename}.`); }
+    catch (err) { if (err && err.code === 'declined') return; toast(err && err.code === 'rate_limited' ? 'A save prompt is already open.' : 'Downloads are not available in this view.'); }
+    return;
+  }
+  if (inFrame) { toast(CAP.downloads === undefined ? 'Still connecting. Try again in a moment.' : 'Downloads are not available in this view.'); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+}
+async function exportSVGFile() { statusUI('Preparing SVG…'); try { await offer('prototype-graph.svg', new Blob([await buildSVG()], {type: 'image/svg+xml'})); } finally { statusUI(); } }
+async function exportPNG() {
+  statusUI('Preparing PNG…');
+  try {
+    const svg = await buildSVG(), scale = state.opts.pngScale || 2;
+    const url = URL.createObjectURL(new Blob([svg], {type: 'image/svg+xml'}));
+    const img = new Image(); img.src = url; await img.decode();
+    const c = document.createElement('canvas'); c.width = state.board.w * scale; c.height = state.board.h * scale;
+    const ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(url);
+    const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+    if (!blob) throw new Error('canvas');
+    await offer('prototype-graph.png', blob);
+  } catch (err) { toast('PNG export failed in this browser. Export SVG instead.'); }
+  finally { statusUI(); }
+}
+
+// ---------- save a new version of this page ----------
+function buildDocument(st) {
+  const json = JSON.stringify(st).replace(/</g, '\\u003c');
+  return '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>' + RESET + '</style></head><body>'
+    + SRC.pre + '<style id="css">' + SRC.css + '</style>' + SRC.shell
+    + '<script type="application/json" id="graph-data">' + json + SC
+    + '<script id="app">' + SRC.app + SC + '</body></html>';
+}
+async function save() {
+  const art = CAP.artifact; if (!art || readOnly) return;
+  const st = JSON.parse(JSON.stringify(state)); st.savedAt = new Date().toISOString();
+  $('b-save').disabled = true; statusUI('Saving…');
+  try {
+    await art.publish(buildDocument(st));
+    try { localStorage.removeItem(DKEY); } catch (e) { /* ignore */ }
+    dirty = false; statusUI('Saved. Reloading…');
+  } catch (err) {
+    const c = err && err.code;
+    if (c === 'conflict') toast('A newer version was saved elsewhere. The page is reloading to it.');
+    else if (['not_writer', 'not_granted', 'consent_required', 'not_declared', 'capability_disabled', 'capability_removed'].includes(c)) { readOnly = true; toast('This view can’t save. Export JSON to keep your edits.'); }
+    else if (c === 'too_large') toast('The page is too large to save. Replace embedded images with smaller ones.');
+    else if (c === 'rate_limited') toast('Saving too often. Wait a moment, then save again.');
+    else toast('Saving failed. Try again in a moment.');
+    statusUI(); capsUI();
+  }
+}
+
+// ---------- photos published next to the page (GitHub copy): photos/manifest.json ----------
+async function loadManifest() {
+  let m; try { const r = await fetch('photos/manifest.json', {cache: 'no-store'}); if (!r.ok) return; m = await r.json(); } catch (e) { return; }
+  let k = 0;
+  const put = (o, h) => { if (h && h.path && !o.img) { o.img = {src: h.path, z: 1, ox: 0, oy: 0, credit: {author: h.author, license: h.license, page: h.page, from: h.from}}; k++; } };
+  state.nodes.forEach(n => { if (n.t !== 'case') return; put(n, m[n.name]); (n.alts || []).forEach(a => put(a, m[a.name])); });
+  if (k) { renderAll(); }
+}
+if (!window.claude) { $('b-save').hidden = true; }
+
+// ---------- start ----------
+histUI(); capsUI(); renderAll(); fit(); statusUI(); loadManifest();
+if (restored) toast('Restored your unsaved edits from this browser.');
+})();
+</script>
+
+</body>
+</html>
