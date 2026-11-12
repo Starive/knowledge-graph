@@ -108,7 +108,7 @@ def main():
                 "author": plain(md.get("Artist", {}).get("value"))[:160],
                 "license": plain(md.get("LicenseShortName", {}).get("value")),
                 "licenseUrl": md.get("LicenseUrl", {}).get("value", ""),
-                "from": spec.get("from", "") if not (spec.get("file") and page["title"].replace("File:", "").replace(" ", "_") != spec["file"].replace(" ", "_")) or not spec.get("search") else "Wikimedia Commons search",
+                "from": spec.get("from", ""),
             }
             print(f"ok: {case} <- {page['title']}")
         except Exception as e:  # keep going; report at the end
