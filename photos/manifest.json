@@ -26,6 +26,15 @@
   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
   "from": "Miro board card"
  },
+ "Beijing National Stadium": {
+  "path": "photos/beijing-national-stadium.jpg",
+  "file": "File:Beijing national stadium.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Beijing_national_stadium.jpg",
+  "author": "Peter23",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "from": "Wikimedia Commons search"
+ },
  "CCTV Headquarters": {
   "path": "photos/cctv-headquarters.jpg",
   "file": "File:CCTV Headquarters Beijing - Flickr.jpg",
@@ -325,11 +334,11 @@
  },
  "Lingotto": {
   "path": "photos/lingotto.jpg",
-  "file": "File:Voies-torino-lingotto-1.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:Voies-torino-lingotto-1.jpg",
-  "author": "Remontees",
-  "license": "CC BY-SA 4.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "file": "File:Fiat Lingotto Rooftop Racetrack 1.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Fiat_Lingotto_Rooftop_Racetrack_1.jpg",
+  "author": "IIVQ / Tijmen Stam",
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
   "from": "Wikimedia Commons search"
  },
  "Linked Hybrid": {
@@ -361,11 +370,11 @@
  },
  "Millau Viaduct": {
   "path": "photos/millau-viaduct.jpg",
-  "file": "File:Panorama de la vallée de Millau.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:Panorama_de_la_vall%C3%A9e_de_Millau.jpg",
-  "author": "Tobi 87",
-  "license": "CC BY-SA 3.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "file": "File:00 0237 Millau - Département Aveyron.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:00_0237_Millau_-_D%C3%A9partement_Aveyron.jpg",
+  "author": "W. Bulach",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
   "from": "Wikimedia Commons search"
  },
  "Montreal Biosphère": {
@@ -528,6 +537,15 @@
   "author": "scarletgreen from Japan",
   "license": "CC BY 2.0",
   "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "from": "Wikimedia Commons search"
+ },
+ "Seoul Olympic Gymnastics Arena": {
+  "path": "photos/seoul-olympic-gymnastics-arena.jpg",
+  "file": "File:151206 펩시콘서트 동우 2.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:151206_%ED%8E%A9%EC%8B%9C%EC%BD%98%EC%84%9C%ED%8A%B8_%EB%8F%99%EC%9A%B0_2.jpg",
+  "author": "sunshinedw",
+  "license": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
   "from": "Wikimedia Commons search"
  },
  "Shanghai Pudong Airport T1": {

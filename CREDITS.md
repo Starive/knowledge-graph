@@ -7,6 +7,7 @@ Each built-case photo in the graph, where it came from and its licence. Photos m
 | 30 St Mary Axe | [30 St Mary Axe (The Gherkin of London).jpg](https://commons.wikimedia.org/wiki/File:30_St_Mary_Axe_(The_Gherkin_of_London).jpg) | Kunstlerbob (Robert Bauer) | CC BY-SA 3.0 | Miro board card |
 | Akashi Kaikyō Bridge | [Akashi Bridge.JPG](https://commons.wikimedia.org/wiki/File:Akashi_Bridge.JPG) | Tysto | Public domain | Wikimedia Commons search |
 | Bank of China Tower | [Bank of China Tower (Hong Kong).jpg](https://commons.wikimedia.org/wiki/File:Bank_of_China_Tower_(Hong_Kong).jpg) | Mk2010 | CC BY-SA 3.0 | Miro board card |
+| Beijing National Stadium | [Beijing national stadium.jpg](https://commons.wikimedia.org/wiki/File:Beijing_national_stadium.jpg) | Peter23 | CC BY-SA 3.0 | Wikimedia Commons search |
 | CCTV Headquarters | [CCTV Headquarters Beijing - Flickr.jpg](https://commons.wikimedia.org/wiki/File:CCTV_Headquarters_Beijing_-_Flickr.jpg) | Bjarke Liboriussen | CC BY 2.0 | Wikimedia Commons search |
 | Capital Gate | [Capital Gate Place the Tower 1.jpg](https://commons.wikimedia.org/wiki/File:Capital_Gate_Place_the_Tower_1.jpg) | Beryllium Transistor | CC BY-SA 4.0 | Miro board card |
 | Casa Milà attic | [Attic of Casa Milà by Mikani - IMG 2444.jpg](https://commons.wikimedia.org/wiki/File:Attic_of_Casa_Mil%C3%A0_by_Mikani_-_IMG_2444.jpg) | Mikani | CC BY-SA 4.0 | Wikimedia Commons search |
@@ -40,11 +41,11 @@ Each built-case photo in the graph, where it came from and its licence. Photos m
 | Kimbell Art Museum | [Kimbell Art Museum Fort Worth 03.jpg](https://commons.wikimedia.org/wiki/File:Kimbell_Art_Museum_Fort_Worth_03.jpg) | Photo: Andreas Praefcke | Public domain | Miro board card |
 | Kresge Auditorium | [MIT Kresge Auditorium.jpg](https://commons.wikimedia.org/wiki/File:MIT_Kresge_Auditorium.jpg) | Madcoverboy (talk) | CC BY-SA 3.0 | Miro board card |
 | Kurilpa Bridge | [KurilpaBridge1.JPG](https://commons.wikimedia.org/wiki/File:KurilpaBridge1.JPG) | Paulguard at English Wikipedia | CC BY-SA 3.0 | Miro board card |
-| Lingotto | [Voies-torino-lingotto-1.jpg](https://commons.wikimedia.org/wiki/File:Voies-torino-lingotto-1.jpg) | Remontees | CC BY-SA 4.0 | Wikimedia Commons search |
+| Lingotto | [Fiat Lingotto Rooftop Racetrack 1.jpg](https://commons.wikimedia.org/wiki/File:Fiat_Lingotto_Rooftop_Racetrack_1.jpg) | IIVQ / Tijmen Stam | CC BY-SA 3.0 | Wikimedia Commons search |
 | Linked Hybrid | [Linked Hybrid (20200628142223).jpg](https://commons.wikimedia.org/wiki/File:Linked_Hybrid_(20200628142223).jpg) | N509FZ | CC BY-SA 4.0 | Miro board card |
 | Lupu Bridge | [Lupu Bridge, Huangpu River.JPG](https://commons.wikimedia.org/wiki/File:Lupu_Bridge,_Huangpu_River.JPG) | Glabb | CC BY-SA 3.0 | Miro board card |
 | Madison Square Garden | [Madison Square Garden (MSG) - Full (48124330357).jpg](https://commons.wikimedia.org/wiki/File:Madison_Square_Garden_(MSG)_-_Full_(48124330357).jpg) | Ajay Suresh from New York, NY, USA | CC BY 2.0 | Wikimedia Commons search |
-| Millau Viaduct | [Panorama de la vallée de Millau.jpg](https://commons.wikimedia.org/wiki/File:Panorama_de_la_vall%C3%A9e_de_Millau.jpg) | Tobi 87 | CC BY-SA 3.0 | Wikimedia Commons search |
+| Millau Viaduct | [00 0237 Millau - Département Aveyron.jpg](https://commons.wikimedia.org/wiki/File:00_0237_Millau_-_D%C3%A9partement_Aveyron.jpg) | W. Bulach | CC BY-SA 4.0 | Wikimedia Commons search |
 | Montreal Biosphère | [Biosphere montreal.JPG](https://commons.wikimedia.org/wiki/File:Biosphere_montreal.JPG) | Philipp Hienstorfer | CC BY-SA 4.0 | Miro board card |
 | Multihalle Mannheim | [Multihalle07.jpg](https://commons.wikimedia.org/wiki/File:Multihalle07.jpg) | Hubert Berberich (HubiB) | CC BY 3.0 | Miro board card |
 | Munich Olympic Stadium | [Olympiastadion at dusk.JPG](https://commons.wikimedia.org/wiki/File:Olympiastadion_at_dusk.JPG) | Martin Falbisoner | CC BY-SA 3.0 | Wikimedia Commons search |
@@ -63,6 +64,7 @@ Each built-case photo in the graph, where it came from and its licence. Photos m
 | Salginatobel Bridge | [Salginatobel Bridge mg 4080.jpg](https://commons.wikimedia.org/wiki/File:Salginatobel_Bridge_mg_4080.jpg) | Rama | CC BY-SA 2.0 fr | Miro board card |
 | Seattle Central Library | [Seattle Central Library, Seattle, Washington - 20060418.jpg](https://commons.wikimedia.org/wiki/File:Seattle_Central_Library,_Seattle,_Washington_-_20060418.jpg) | DVD R W. | CC BY-SA 3.0 | Miro board card |
 | Sendai Mediatheque | [Sendai Mediatheque 2009.jpg](https://commons.wikimedia.org/wiki/File:Sendai_Mediatheque_2009.jpg) | scarletgreen from Japan | CC BY 2.0 | Wikimedia Commons search |
+| Seoul Olympic Gymnastics Arena | [151206 펩시콘서트 동우 2.jpg](https://commons.wikimedia.org/wiki/File:151206_%ED%8E%A9%EC%8B%9C%EC%BD%98%EC%84%9C%ED%8A%B8_%EB%8F%99%EC%9A%B0_2.jpg) | sunshinedw | CC BY 4.0 | Wikimedia Commons search |
 | Shanghai Pudong Airport T1 | [Shanghai Pudong International Airport Interior.jpg](https://commons.wikimedia.org/wiki/File:Shanghai_Pudong_International_Airport_Interior.jpg) | WiNG | CC BY 3.0 | Miro board card |
 | Skylon | [The Skylon at the Festival of Britain, 1951 BW Lee (1).jpg](https://commons.wikimedia.org/wiki/File:The_Skylon_at_the_Festival_of_Britain,_1951_BW_Lee_(1).jpg) | Heresy0uk | CC BY-SA 4.0 | Miro board card |
 | Spaceship Earth | [Spaceship Earth, Epcot (6068559916).jpg](https://commons.wikimedia.org/wiki/File:Spaceship_Earth,_Epcot_(6068559916).jpg) | InSapphoWeTrust from Los Angeles, California, USA | CC BY-SA 2.0 | Miro board card |
@@ -81,7 +83,5 @@ Each built-case photo in the graph, where it came from and its licence. Photos m
 ## No photo found
 
 - Armadillo Vault
-- Beijing National Stadium
 - Los Manantiales
 - Mapungubwe Interpretation Centre
-- Seoul Olympic Gymnastics Arena
