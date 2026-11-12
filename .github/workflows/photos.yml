@@ -1,4 +1,5 @@
 name: Fetch case photos
+# Runs when the photo list or this workflow changes, or by hand from the Actions tab.
 
 on:
   workflow_dispatch:
