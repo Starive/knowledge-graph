@@ -154,6 +154,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
     </div>
     <span id="status" class="status">Saved version</span>
     <button id="b-save" class="primary" data-act="save" disabled title="Saving works on the published page">Save version</button>
+    <button id="b-submit" class="primary" data-act="submit" hidden title="Send your changes to the GitHub repository for review">Submit to GitHub</button>
   </header>
   <main>
     <div class="stage" id="stage">
@@ -203,7 +204,7 @@ state.opts = Object.assign({captions: true, snap: false, pngScale: 2, arrow: 'no
 let byId = {};
 const reindex = () => { byId = Object.fromEntries(state.nodes.map(n => [n.id, n])); };
 reindex();
-let dirty = restored;
+let dirty = restored, baseKey = embedded.savedAt, submitView = false;
 let sel = {nodes: new Set(), edge: null, legend: false};
 let mode = 'select', connectFrom = null, preview = null, drag = null, dropTarget = null;
 const undoS = [], redoS = [];
@@ -482,12 +483,12 @@ let draftT = 0;
 function markDirty() {
   dirty = true; statusUI();
   clearTimeout(draftT);
-  draftT = setTimeout(() => { try { localStorage.setItem(DKEY, JSON.stringify({base: embedded.savedAt, state})); } catch (e) { /* draft not kept */ } }, 600);
+  draftT = setTimeout(() => { try { localStorage.setItem(DKEY, JSON.stringify({base: baseKey, state})); } catch (e) { /* draft not kept */ } }, 600);
 }
 function statusUI(text) {
   const el = $('status');
   el.classList.toggle('dirty', dirty && !text);
-  el.textContent = text || (readOnly ? 'Read-only view' : dirty ? 'Unsaved changes' : (state.savedAt ? 'Saved version' : 'Starting layout'));
+  el.textContent = text || (readOnly ? 'Read-only view' : dirty ? (window.claude ? 'Unsaved changes' : 'Your edits (kept in this browser)') : (state.savedAt ? 'Saved version' : 'Starting layout'));
 }
 function capsUI() {
   const b = $('b-save');
@@ -508,7 +509,38 @@ function renderPanel() {
   if (sel.legend) return panelLegend();
   panelGraph();
 }
+// ---------- GitHub copy: submit changes as a pull request ----------
+const REPO = (() => { const h = location.hostname.match(/^([^.]+)\.github\.io$/i), seg = location.pathname.split('/').filter(Boolean)[0]; return h && seg ? `${h[1]}/${seg}` : 'Starive/knowledge-graph'; })();
+function submission() {
+  const st = JSON.parse(JSON.stringify(state)); st.savedAt = new Date().toISOString();
+  const strip = o => { if (o.img && o.img.credit && String(o.img.src || '').startsWith('photos/')) delete o.img; };
+  st.nodes.forEach(n => { strip(n); (n.alts || []).forEach(strip); });
+  return JSON.stringify(st, null, 1);
+}
+async function copySubmission() {
+  const text = submission(), ta = $('sub-text');
+  try { await navigator.clipboard.writeText(text); toast('Copied. Paste it into the GitHub page.'); }
+  catch (e) { if (ta) { ta.value = text; ta.hidden = false; ta.focus(); ta.select(); toast('Press Ctrl+C or ⌘C to copy the selected text.'); } }
+}
+function panelSubmit() {
+  panel.innerHTML = `
+  <section class="sec">
+    <div class="kicker">Submit to GitHub</div>
+    <h2>Send your version of the graph for review</h2>
+    <ol class="tips">
+      <li><button data-act="submit-copy">Copy my graph</button></li>
+      <li>Open <a href="https://github.com/${REPO}/edit/main/graph.json" target="_blank" rel="noopener">graph.json on GitHub</a> and sign in.</li>
+      <li>Select everything in the GitHub editor, delete it, and paste.</li>
+      <li>Click <b>Commit changes…</b>, say what you changed, and choose <b>Propose changes</b>. GitHub opens a pull request.</li>
+    </ol>
+    <p class="note">The owner reviews the pull request. Once it is merged, everyone who opens this page sees the new version, and every change stays in the repository history.</p>
+    <p class="note">Photos that come from the repository's photo list are not copied. To change a photo, edit <a href="https://github.com/${REPO}/edit/main/photos/sources.json" target="_blank" rel="noopener">photos/sources.json</a>.</p>
+    <textarea id="sub-text" rows="6" hidden aria-label="Graph data to copy"></textarea>
+    <div class="btnrow"><button data-act="submit-close">Back to the graph</button></div>
+  </section>`;
+}
 function panelGraph() {
+  if (submitView) return panelSubmit();
   const cases = state.nodes.filter(n => n.t === 'case'), noPhoto = cases.filter(n => !n.img);
   const count = t => state.nodes.filter(n => t.includes(n.t)).length;
   panel.innerHTML = `
@@ -776,6 +808,9 @@ document.getElementById('root').addEventListener('click', ev => {
     case 'export-svg': exportSVGFile(); break;
     case 'export-json': offer('prototype-graph.json', new Blob([JSON.stringify(state, null, 1)], {type: 'application/json'})); break;
     case 'save': save(); break;
+    case 'submit': submitView = true; select({}); break;
+    case 'submit-copy': copySubmission(); break;
+    case 'submit-close': submitView = false; renderPanel(); break;
     case 'sel-node': select({nodes: new Set([b.dataset.id])}); break;
     case 'sel-edge': select({edge: b.dataset.id}); break;
     case 'del': deleteSelection(); break;
@@ -1095,10 +1130,23 @@ async function loadManifest() {
   state.nodes.forEach(n => { if (n.t !== 'case') return; put(n, m[n.name]); (n.alts || []).forEach(a => put(a, m[a.name])); });
   if (k) { renderAll(); }
 }
-if (!window.claude) { $('b-save').hidden = true; }
+if (!window.claude) { $('b-save').hidden = true; $('b-submit').hidden = false; }
+// GitHub copy: the shared graph lives in graph.json next to the page
+async function loadRepoGraph() {
+  if (window.claude) return;
+  let g; try { const r = await fetch('graph.json', {cache: 'no-store'}); if (!r.ok) return; g = await r.json(); } catch (e) { return; }
+  if (!g || !Array.isArray(g.nodes) || !Array.isArray(g.edges)) return;
+  baseKey = 'repo:' + (g.savedAt || ''); let next = g, rest = false;
+  try { const d = JSON.parse(localStorage.getItem(DKEY) || 'null'); if (d && d.base === baseKey && d.state && Array.isArray(d.state.nodes)) { next = d.state; rest = true; } } catch (e) { /* no draft */ }
+  state = next; state.opts = Object.assign({captions: true, snap: false, pngScale: 2, arrow: 'none'}, state.opts || {});
+  state.legend = state.legend || {x: 1905, y: 330, show: true}; state.board = state.board || {w: 2180, h: 1460};
+  dirty = rest; undoS.length = 0; redoS.length = 0; histUI(); sel = {nodes: new Set(), edge: null, legend: false};
+  renderAll(); fit(); statusUI();
+  if (rest) toast('Restored your unsaved edits from this browser.');
+}
 
 // ---------- start ----------
-histUI(); capsUI(); renderAll(); fit(); statusUI(); loadManifest();
+histUI(); capsUI(); renderAll(); fit(); statusUI(); loadRepoGraph().then(loadManifest);
 if (restored) toast('Restored your unsaved edits from this browser.');
 })();
 </script>

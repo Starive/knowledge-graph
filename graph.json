@@ -1,0 +1,1816 @@
+{
+ "v": 1,
+ "savedAt": "2026-11-12T00:00:00Z",
+ "board": {
+  "w": 2180,
+  "h": 1460
+ },
+ "legend": {
+  "x": 1905,
+  "y": 330,
+  "show": true
+ },
+ "opts": {
+  "captions": true,
+  "snap": false,
+  "pngScale": 2
+ },
+ "nodes": [
+  {
+   "id": "CB",
+   "t": "adj",
+   "x": 634,
+   "y": 857,
+   "r": 40,
+   "glyph": "CB",
+   "label": "Cable"
+  },
+  {
+   "id": "PC",
+   "t": "adj",
+   "x": 682,
+   "y": 985,
+   "r": 40,
+   "glyph": "PC",
+   "label": "Parabolic\nCable"
+  },
+  {
+   "id": "CT",
+   "t": "adj",
+   "x": 884,
+   "y": 970,
+   "r": 40,
+   "glyph": "CT",
+   "label": "Gable\ntruss"
+  },
+  {
+   "id": "PA",
+   "t": "adj",
+   "x": 1297,
+   "y": 808,
+   "r": 40,
+   "glyph": "PA",
+   "label": "Parabolic\nArch"
+  },
+  {
+   "id": "AR",
+   "t": "adj",
+   "x": 1168,
+   "y": 594,
+   "r": 40,
+   "glyph": "AR",
+   "label": "Arch"
+  },
+  {
+   "id": "FR",
+   "t": "adj",
+   "x": 983,
+   "y": 431,
+   "r": 40,
+   "glyph": "FR",
+   "label": "Frame"
+  },
+  {
+   "id": "TR",
+   "t": "adj",
+   "x": 753,
+   "y": 519,
+   "r": 40,
+   "glyph": "TR",
+   "label": "Truss"
+  },
+  {
+   "id": "BM",
+   "t": "adj",
+   "x": 634,
+   "y": 603,
+   "r": 40,
+   "glyph": "BM",
+   "label": "Beams"
+  },
+  {
+   "id": "AC",
+   "t": "core",
+   "x": 905,
+   "y": 730,
+   "r": 58,
+   "glyph": "AC",
+   "label": "Arch-cable"
+  },
+  {
+   "id": "TC",
+   "t": "orig",
+   "x": 579,
+   "y": 778,
+   "r": 42,
+   "glyph": "TC",
+   "label": "Triangular\nCable"
+  },
+  {
+   "id": "TA",
+   "t": "orig",
+   "x": 579,
+   "y": 682,
+   "r": 42,
+   "glyph": "TA",
+   "label": "Triangular\nArch"
+  },
+  {
+   "id": "ib1",
+   "t": "ib",
+   "x": 337,
+   "y": 511,
+   "r": 35,
+   "glyph": "nng",
+   "label": "Beam grillage",
+   "cap": false
+  },
+  {
+   "id": "cs1",
+   "t": "case",
+   "x": 147,
+   "y": 438,
+   "r": 49,
+   "label": "Neue\nNational-\ngalerie",
+   "name": "Neue Nationalgalerie",
+   "year": "1968",
+   "meta": "Berlin · 1968 · Mies van der Rohe",
+   "alts": [
+    {
+     "name": "Farnsworth House",
+     "year": "1951",
+     "meta": "Plano, Illinois · 1951 · Mies van der Rohe"
+    },
+    {
+     "name": "Kimbell Art Museum",
+     "year": "1972",
+     "meta": "Fort Worth · 1972 · Louis Kahn, August Komendant"
+    },
+    {
+     "name": "Confederation Bridge",
+     "year": "1997",
+     "meta": "Canada · 1997"
+    },
+    {
+     "name": "Hong Kong–Zhuhai–Macau Bridge",
+     "year": "2018",
+     "meta": "Pearl River Delta · 2018"
+    }
+   ]
+  },
+  {
+   "id": "ib2",
+   "t": "ib",
+   "x": 395,
+   "y": 441,
+   "r": 35,
+   "glyph": "pudong",
+   "label": "Beam string",
+   "cap": false
+  },
+  {
+   "id": "cs2",
+   "t": "case",
+   "x": 225,
+   "y": 345,
+   "r": 49,
+   "label": "Shanghai\nPudong\nAirport T1",
+   "name": "Shanghai Pudong Airport T1",
+   "year": "1999",
+   "meta": "Shanghai · 1999 · Paul Andreu",
+   "alts": []
+  },
+  {
+   "id": "ib3",
+   "t": "ib",
+   "x": 468,
+   "y": 380,
+   "r": 35,
+   "glyph": "bio",
+   "label": "Spatial truss dome",
+   "cap": false
+  },
+  {
+   "id": "cs3",
+   "t": "case",
+   "x": 323,
+   "y": 263,
+   "r": 49,
+   "label": "Montreal\nBiosphère",
+   "name": "Montreal Biosphère",
+   "year": "1967",
+   "meta": "Montreal · 1967 · R. Buckminster Fuller",
+   "alts": [
+    {
+     "name": "Eden Project biomes",
+     "year": "2001",
+     "meta": "Cornwall · 2001 · Grimshaw, Anthony Hunt Associates"
+    },
+    {
+     "name": "Javits Center",
+     "year": "1986",
+     "meta": "New York · 1986 · I. M. Pei & Partners"
+    },
+    {
+     "name": "Spaceship Earth",
+     "year": "1982",
+     "meta": "Florida · 1982 · Epcot"
+    },
+    {
+     "name": "Beijing National Stadium",
+     "year": "2008",
+     "meta": "Beijing · 2008 · Herzog & de Meuron, Arup, CAG"
+    }
+   ]
+  },
+  {
+   "id": "ib4",
+   "t": "ib",
+   "x": 555,
+   "y": 329,
+   "r": 35,
+   "glyph": "eiffel",
+   "label": "Tapered truss tower",
+   "cap": false
+  },
+  {
+   "id": "cs4",
+   "t": "case",
+   "x": 438,
+   "y": 195,
+   "r": 49,
+   "label": "Eiffel\nTower",
+   "name": "Eiffel Tower",
+   "year": "1889",
+   "meta": "Paris · 1889 · Gustave Eiffel, Koechlin & Nouguier",
+   "alts": [
+    {
+     "name": "Forth Bridge",
+     "year": "1890",
+     "meta": "Scotland · 1890 · Fowler & Baker"
+    },
+    {
+     "name": "Quebec Bridge",
+     "year": "1917",
+     "meta": "Quebec City · 1917"
+    },
+    {
+     "name": "Centre Pompidou",
+     "year": "1977",
+     "meta": "Paris · 1977 · Piano & Rogers, Arup"
+    }
+   ]
+  },
+  {
+   "id": "ib5",
+   "t": "ib",
+   "x": 651,
+   "y": 290,
+   "r": 35,
+   "glyph": "gherkin",
+   "label": "Diagrid",
+   "cap": false
+  },
+  {
+   "id": "cs5",
+   "t": "case",
+   "x": 567,
+   "y": 143,
+   "r": 49,
+   "label": "30 St\nMary Axe",
+   "name": "30 St Mary Axe",
+   "year": "2004",
+   "meta": "London · 2004 · Foster + Partners, Arup",
+   "alts": [
+    {
+     "name": "Hearst Tower",
+     "year": "2006",
+     "meta": "New York · 2006 · Foster + Partners"
+    },
+    {
+     "name": "Seattle Central Library",
+     "year": "2004",
+     "meta": "Seattle · 2004 · OMA"
+    },
+    {
+     "name": "Guangzhou International Finance Center",
+     "year": "2010",
+     "meta": "Guangzhou · 2010 · Wilkinson Eyre, Arup"
+    },
+    {
+     "name": "Capital Gate",
+     "year": "2011",
+     "meta": "Abu Dhabi · 2011 · RMJM"
+    }
+   ]
+  },
+  {
+   "id": "ib6",
+   "t": "ib",
+   "x": 755,
+   "y": 263,
+   "r": 35,
+   "glyph": "boc",
+   "label": "Space megatruss",
+   "cap": false
+  },
+  {
+   "id": "cs6",
+   "t": "case",
+   "x": 705,
+   "y": 108,
+   "r": 49,
+   "label": "Bank of\nChina Tower",
+   "name": "Bank of China Tower",
+   "year": "1990",
+   "meta": "Hong Kong · 1990 · I. M. Pei, Leslie E. Robertson",
+   "alts": []
+  },
+  {
+   "id": "ib7",
+   "t": "ib",
+   "x": 864,
+   "y": 251,
+   "r": 35,
+   "glyph": "crown",
+   "label": "Portal frame",
+   "cap": false
+  },
+  {
+   "id": "cs7",
+   "t": "case",
+   "x": 850,
+   "y": 91,
+   "r": 49,
+   "label": "S. R.\nCrown Hall",
+   "name": "S. R. Crown Hall",
+   "year": "1956",
+   "meta": "Chicago · 1956 · Mies van der Rohe",
+   "alts": [
+    {
+     "name": "Sainsbury Centre",
+     "year": "1978",
+     "meta": "Norwich · 1978 · Foster Associates, Anthony Hunt"
+    },
+    {
+     "name": "Galerie des machines",
+     "year": "1889 (demolished 1910)",
+     "meta": "Paris · 1889 (demolished 1910) · Dutert & Contamin"
+    },
+    {
+     "name": "Grande Arche",
+     "year": "1989",
+     "meta": "La Défense, Paris · 1989 · Johan Otto von Spreckelsen"
+    },
+    {
+     "name": "Lingotto",
+     "year": "1923",
+     "meta": "Turin · 1923 · Giacomo Mattè-Trucco"
+    }
+   ]
+  },
+  {
+   "id": "ib8",
+   "t": "ib",
+   "x": 974,
+   "y": 253,
+   "r": 35,
+   "glyph": "sendai",
+   "label": "Tube-and-plate frame",
+   "cap": false
+  },
+  {
+   "id": "cs8",
+   "t": "case",
+   "x": 996,
+   "y": 94,
+   "r": 49,
+   "label": "Sendai\nMedia-\ntheque",
+   "name": "Sendai Mediatheque",
+   "year": "2001",
+   "meta": "Sendai · 2001 · Toyo Ito, Mutsuro Sasaki",
+   "alts": [
+    {
+     "name": "Yamanashi Press and Broadcasting Centre",
+     "year": "1966",
+     "meta": "Kofu · 1966 · Kenzo Tange"
+    }
+   ]
+  },
+  {
+   "id": "ib9",
+   "t": "ib",
+   "x": 1081,
+   "y": 269,
+   "r": 35,
+   "glyph": "cctv",
+   "label": "Looped tube frame",
+   "cap": false
+  },
+  {
+   "id": "cs9",
+   "t": "case",
+   "x": 1140,
+   "y": 115,
+   "r": 49,
+   "label": "CCTV\nHead-\nquarters",
+   "name": "CCTV Headquarters",
+   "year": "2012",
+   "meta": "Beijing · 2012 · OMA, Arup",
+   "alts": []
+  },
+  {
+   "id": "ib10",
+   "t": "ib",
+   "x": 1184,
+   "y": 298,
+   "r": 35,
+   "glyph": "habitat",
+   "label": "Stacked module frame",
+   "cap": false
+  },
+  {
+   "id": "cs10",
+   "t": "case",
+   "x": 1277,
+   "y": 154,
+   "r": 49,
+   "label": "Habitat\n67",
+   "name": "Habitat 67",
+   "year": "1967",
+   "meta": "Montreal · 1967 · Moshe Safdie",
+   "alts": [
+    {
+     "name": "The Interlace",
+     "year": "2013",
+     "meta": "Singapore · 2013 · OMA / Ole Scheeren"
+    },
+    {
+     "name": "Linked Hybrid",
+     "year": "2009",
+     "meta": "Beijing · 2009 · Steven Holl"
+    }
+   ]
+  },
+  {
+   "id": "ib11",
+   "t": "ib",
+   "x": 1278,
+   "y": 340,
+   "r": 35,
+   "glyph": "gard",
+   "label": "Multi-tier arcade",
+   "cap": false
+  },
+  {
+   "id": "cs11",
+   "t": "case",
+   "x": 1402,
+   "y": 211,
+   "r": 49,
+   "label": "Pont\ndu Gard",
+   "name": "Pont du Gard",
+   "year": "1st c. AD",
+   "meta": "Nîmes, France · 1st century AD",
+   "alts": [
+    {
+     "name": "Zhaozhou Bridge",
+     "year": "c. 605 AD",
+     "meta": "Hebei · c. 605 AD · Li Chun"
+    }
+   ]
+  },
+  {
+   "id": "ib12",
+   "t": "ib",
+   "x": 1361,
+   "y": 394,
+   "r": 35,
+   "glyph": "sydney",
+   "label": "Trussed arch",
+   "cap": false
+  },
+  {
+   "id": "cs12",
+   "t": "case",
+   "x": 1513,
+   "y": 282,
+   "r": 49,
+   "label": "Sydney\nHarbour\nBridge",
+   "name": "Sydney Harbour Bridge",
+   "year": "1932",
+   "meta": "Sydney · 1932 · Ralph Freeman, Dorman Long",
+   "alts": [
+    {
+     "name": "New River Gorge Bridge",
+     "year": "1977",
+     "meta": "West Virginia · 1977"
+    },
+    {
+     "name": "Chaotianmen Bridge",
+     "year": "2009",
+     "meta": "Chongqing · 2009"
+    },
+    {
+     "name": "Salginatobel Bridge",
+     "year": "1930",
+     "meta": "Switzerland · 1930 · Robert Maillart"
+    }
+   ]
+  },
+  {
+   "id": "ib13",
+   "t": "ib",
+   "x": 1431,
+   "y": 458,
+   "r": 35,
+   "glyph": "palaz",
+   "label": "Ribbed dome",
+   "cap": false
+  },
+  {
+   "id": "cs13",
+   "t": "case",
+   "x": 1606,
+   "y": 367,
+   "r": 49,
+   "label": "Palazzetto\ndello Sport",
+   "name": "Palazzetto dello Sport",
+   "year": "1957",
+   "meta": "Rome · 1957 · Pier Luigi Nervi",
+   "alts": []
+  },
+  {
+   "id": "ib14",
+   "t": "ib",
+   "x": 1485,
+   "y": 530,
+   "r": 35,
+   "glyph": "kresge",
+   "label": "Thin shell dome",
+   "cap": false
+  },
+  {
+   "id": "cs14",
+   "t": "case",
+   "x": 1679,
+   "y": 463,
+   "r": 49,
+   "label": "Kresge\nAuditorium",
+   "name": "Kresge Auditorium",
+   "year": "1955",
+   "meta": "MIT, Cambridge · 1955 · Eero Saarinen, Ammann & Whitney",
+   "alts": []
+  },
+  {
+   "id": "ib15",
+   "t": "ib",
+   "x": 1522,
+   "y": 607,
+   "r": 35,
+   "glyph": "mana",
+   "label": "Hypar shell",
+   "cap": false
+  },
+  {
+   "id": "cs15",
+   "t": "case",
+   "x": 1728,
+   "y": 567,
+   "r": 49,
+   "label": "Los\nManantiales",
+   "name": "Los Manantiales",
+   "year": "1958",
+   "meta": "Xochimilco, Mexico City · 1958 · Félix Candela",
+   "alts": []
+  },
+  {
+   "id": "ib16",
+   "t": "ib",
+   "x": 1541,
+   "y": 689,
+   "r": 35,
+   "glyph": "gateway",
+   "label": "Catenary arch",
+   "cap": false
+  },
+  {
+   "id": "cs16",
+   "t": "case",
+   "x": 1753,
+   "y": 675,
+   "r": 49,
+   "label": "Gateway\nArch",
+   "name": "Gateway Arch",
+   "year": "1965",
+   "meta": "St. Louis · 1965 · Eero Saarinen, Hannskarl Bandel",
+   "alts": [
+    {
+     "name": "Gateshead Millennium Bridge",
+     "year": "2001",
+     "meta": "Gateshead · 2001 · Wilkinson Eyre, Gifford"
+    }
+   ]
+  },
+  {
+   "id": "ib17",
+   "t": "ib",
+   "x": 1541,
+   "y": 771,
+   "r": 35,
+   "glyph": "mila",
+   "label": "Catenary arcade",
+   "cap": false
+  },
+  {
+   "id": "cs17",
+   "t": "case",
+   "x": 1753,
+   "y": 785,
+   "r": 49,
+   "label": "Casa Milà\nattic",
+   "name": "Casa Milà attic",
+   "year": "1912",
+   "meta": "Barcelona · 1912 · Antoni Gaudí",
+   "alts": []
+  },
+  {
+   "id": "ib18",
+   "t": "ib",
+   "x": 1522,
+   "y": 853,
+   "r": 35,
+   "glyph": "armadillo",
+   "label": "Funicular vault",
+   "cap": false
+  },
+  {
+   "id": "cs18",
+   "t": "case",
+   "x": 1728,
+   "y": 893,
+   "r": 49,
+   "label": "Armadillo\nVault",
+   "name": "Armadillo Vault",
+   "year": "2016",
+   "meta": "Venice Biennale · 2016 · Block Research Group, ETH Zürich",
+   "alts": [
+    {
+     "name": "Mapungubwe Interpretation Centre",
+     "year": "2009",
+     "meta": "Limpopo, South Africa · 2009 · Peter Rich, John Ochsendorf, Michael Ramage"
+    },
+    {
+     "name": "Church of Atlántida",
+     "year": "1960",
+     "meta": "Uruguay · 1960 · Eladio Dieste"
+    }
+   ]
+  },
+  {
+   "id": "ib19",
+   "t": "ib",
+   "x": 1485,
+   "y": 930,
+   "r": 35,
+   "glyph": "sagrada",
+   "label": "Branching column",
+   "cap": false
+  },
+  {
+   "id": "cs19",
+   "t": "case",
+   "x": 1679,
+   "y": 997,
+   "r": 49,
+   "label": "Sagrada\nFamília",
+   "name": "Sagrada Família",
+   "year": "1882–",
+   "meta": "Barcelona · 1882–present · Antoni Gaudí",
+   "alts": [
+    {
+     "name": "Church of Colònia Güell",
+     "year": "1908–14",
+     "meta": "Santa Coloma de Cervelló · 1908–14 · Antoni Gaudí"
+    }
+   ]
+  },
+  {
+   "id": "ib20",
+   "t": "ib",
+   "x": 1431,
+   "y": 1002,
+   "r": 35,
+   "glyph": "multi",
+   "label": "Funicular gridshell",
+   "cap": false
+  },
+  {
+   "id": "cs20",
+   "t": "case",
+   "x": 1606,
+   "y": 1093,
+   "r": 49,
+   "label": "Multihalle\nMannheim",
+   "name": "Multihalle Mannheim",
+   "year": "1975",
+   "meta": "Mannheim · 1975 · Frei Otto, Carlfried Mutschler, Arup",
+   "alts": []
+  },
+  {
+   "id": "ib21",
+   "t": "ib",
+   "x": 1361,
+   "y": 1066,
+   "r": 35,
+   "glyph": "infinity",
+   "label": "Tied arch",
+   "cap": false
+  },
+  {
+   "id": "cs21",
+   "t": "case",
+   "x": 1513,
+   "y": 1178,
+   "r": 49,
+   "label": "Infinity\nBridge",
+   "name": "Infinity Bridge",
+   "year": "2009",
+   "meta": "Stockton-on-Tees · 2009 · Expedition Engineering",
+   "alts": [
+    {
+     "name": "Lupu Bridge",
+     "year": "2003",
+     "meta": "Shanghai · 2003"
+    },
+    {
+     "name": "Fehmarnsund Bridge",
+     "year": "1963",
+     "meta": "Germany · 1963"
+    }
+   ]
+  },
+  {
+   "id": "ib22",
+   "t": "ib",
+   "x": 1278,
+   "y": 1120,
+   "r": 35,
+   "glyph": "dorton",
+   "label": "Arch-supported net",
+   "cap": false
+  },
+  {
+   "id": "cs22",
+   "t": "case",
+   "x": 1402,
+   "y": 1249,
+   "r": 49,
+   "label": "J. S. Dorton\nArena",
+   "name": "J. S. Dorton Arena",
+   "year": "1952",
+   "meta": "Raleigh · 1952 · Matthew Nowicki, Fred Severud",
+   "alts": [
+    {
+     "name": "Ingalls Rink",
+     "year": "1958",
+     "meta": "Yale, New Haven · 1958 · Eero Saarinen, Fred Severud"
+    }
+   ]
+  },
+  {
+   "id": "ib23",
+   "t": "ib",
+   "x": 1184,
+   "y": 1162,
+   "r": 35,
+   "glyph": "seoul",
+   "label": "Cable dome",
+   "cap": false
+  },
+  {
+   "id": "cs23",
+   "t": "case",
+   "x": 1277,
+   "y": 1306,
+   "r": 49,
+   "label": "Seoul Olympic\nGymnastics\nArena",
+   "name": "Seoul Olympic Gymnastics Arena",
+   "year": "1988",
+   "meta": "Seoul · 1988 · David Geiger",
+   "alts": [
+    {
+     "name": "Georgia Dome",
+     "year": "1992 (demolished 2017)",
+     "meta": "Atlanta · 1992 (demolished 2017) · Weidlinger Associates"
+    }
+   ]
+  },
+  {
+   "id": "ib24",
+   "t": "ib",
+   "x": 1081,
+   "y": 1191,
+   "r": 35,
+   "glyph": "needle",
+   "label": "Tensegrity tower",
+   "cap": false
+  },
+  {
+   "id": "cs24",
+   "t": "case",
+   "x": 1140,
+   "y": 1345,
+   "r": 49,
+   "label": "Needle\nTower",
+   "name": "Needle Tower",
+   "year": "1968",
+   "meta": "Washington, DC · 1968 · Kenneth Snelson",
+   "alts": [
+    {
+     "name": "Kurilpa Bridge",
+     "year": "2009",
+     "meta": "Brisbane · 2009 · Cox Rayner, Arup"
+    },
+    {
+     "name": "Skylon",
+     "year": "1951 (removed 1952)",
+     "meta": "London · 1951 (removed 1952) · Powell & Moya, Felix Samuely"
+    }
+   ]
+  },
+  {
+   "id": "ib25",
+   "t": "ib",
+   "x": 974,
+   "y": 1207,
+   "r": 35,
+   "glyph": "utica",
+   "label": "Double-cable truss",
+   "cap": false
+  },
+  {
+   "id": "cs25",
+   "t": "case",
+   "x": 996,
+   "y": 1366,
+   "r": 49,
+   "label": "Utica\nMemorial\nAuditorium",
+   "name": "Utica Memorial Auditorium",
+   "year": "1959",
+   "meta": "Utica, NY · 1959 · Lev Zetlin, Gilbert Seltzer",
+   "alts": []
+  },
+  {
+   "id": "ib26",
+   "t": "ib",
+   "x": 864,
+   "y": 1209,
+   "r": 35,
+   "glyph": "munich",
+   "label": "Anticlastic cable net",
+   "cap": false
+  },
+  {
+   "id": "cs26",
+   "t": "case",
+   "x": 850,
+   "y": 1369,
+   "r": 49,
+   "label": "Munich\nOlympic\nStadium",
+   "name": "Munich Olympic Stadium",
+   "year": "1972",
+   "meta": "Munich · 1972 · Behnisch, Frei Otto, Leonhardt + Andrä",
+   "alts": [
+    {
+     "name": "National Speed Skating Oval",
+     "year": "2021",
+     "meta": "Beijing · 2021"
+    }
+   ]
+  },
+  {
+   "id": "ib27",
+   "t": "ib",
+   "x": 755,
+   "y": 1197,
+   "r": 35,
+   "glyph": "spoke",
+   "label": "Spoke wheel",
+   "cap": false
+  },
+  {
+   "id": "cs27",
+   "t": "case",
+   "x": 705,
+   "y": 1352,
+   "r": 49,
+   "label": "Gottlieb-\nDaimler\nStadion",
+   "name": "Gottlieb-Daimler-Stadion roof",
+   "year": "1993",
+   "meta": "Stuttgart · 1993 · Schlaich Bergermann",
+   "alts": [
+    {
+     "name": "Madison Square Garden",
+     "year": "1968",
+     "meta": "New York · 1968"
+    }
+   ]
+  },
+  {
+   "id": "ib28",
+   "t": "ib",
+   "x": 651,
+   "y": 1170,
+   "r": 35,
+   "glyph": "gg",
+   "label": "Suspension span",
+   "cap": false
+  },
+  {
+   "id": "cs28",
+   "t": "case",
+   "x": 567,
+   "y": 1317,
+   "r": 49,
+   "label": "Golden Gate\nBridge",
+   "name": "Golden Gate Bridge",
+   "year": "1937",
+   "meta": "San Francisco · 1937 · Joseph Strauss, Charles Ellis",
+   "alts": [
+    {
+     "name": "Tsing Ma Bridge",
+     "year": "1997",
+     "meta": "Hong Kong · 1997"
+    },
+    {
+     "name": "Akashi Kaikyō Bridge",
+     "year": "1998",
+     "meta": "Kobe · 1998"
+    }
+   ]
+  },
+  {
+   "id": "ib29",
+   "t": "ib",
+   "x": 555,
+   "y": 1131,
+   "r": 35,
+   "glyph": "yoyogi",
+   "label": "Suspended roof",
+   "cap": false
+  },
+  {
+   "id": "cs29",
+   "t": "case",
+   "x": 438,
+   "y": 1265,
+   "r": 49,
+   "label": "Yoyogi\nNational\nGymnasium",
+   "name": "Yoyogi National Gymnasium",
+   "year": "1964",
+   "meta": "Tokyo · 1964 · Kenzo Tange, Yoshikatsu Tsuboi",
+   "alts": [
+    {
+     "name": "Dulles Airport Main Terminal",
+     "year": "1962",
+     "meta": "Virginia · 1962 · Eero Saarinen, Ammann & Whitney"
+    }
+   ]
+  },
+  {
+   "id": "ib30",
+   "t": "ib",
+   "x": 468,
+   "y": 1080,
+   "r": 35,
+   "glyph": "pav",
+   "label": "Hanging canopy",
+   "cap": false
+  },
+  {
+   "id": "cs30",
+   "t": "case",
+   "x": 323,
+   "y": 1197,
+   "r": 49,
+   "label": "Pavilhão\nde Portugal",
+   "name": "Pavilhão de Portugal",
+   "year": "1998",
+   "meta": "Lisbon · 1998 · Álvaro Siza, Segadães Tavares",
+   "alts": []
+  },
+  {
+   "id": "ib31",
+   "t": "ib",
+   "x": 395,
+   "y": 1019,
+   "r": 35,
+   "glyph": "millau",
+   "label": "Cable-stayed fan",
+   "cap": false
+  },
+  {
+   "id": "cs31",
+   "t": "case",
+   "x": 225,
+   "y": 1115,
+   "r": 49,
+   "label": "Millau\nViaduct",
+   "name": "Millau Viaduct",
+   "year": "2004",
+   "meta": "France · 2004 · Michel Virlogeux, Foster + Partners",
+   "alts": [
+    {
+     "name": "Puente del Alamillo",
+     "year": "1992",
+     "meta": "Seville · 1992 · Santiago Calatrava"
+    },
+    {
+     "name": "Stonecutters Bridge",
+     "year": "2009",
+     "meta": "Hong Kong · 2009"
+    },
+    {
+     "name": "Ting Kau Bridge",
+     "year": "1998",
+     "meta": "Hong Kong · 1998 · Schlaich Bergermann"
+    },
+    {
+     "name": "Sutong Bridge",
+     "year": "2008",
+     "meta": "Jiangsu · 2008"
+    },
+    {
+     "name": "Sundial Bridge",
+     "year": "2004",
+     "meta": "Redding, California · 2004 · Santiago Calatrava"
+    }
+   ]
+  },
+  {
+   "id": "ib32",
+   "t": "ib",
+   "x": 337,
+   "y": 949,
+   "r": 35,
+   "glyph": "hsbc",
+   "label": "Hung floors",
+   "cap": false
+  },
+  {
+   "id": "cs32",
+   "t": "case",
+   "x": 147,
+   "y": 1022,
+   "r": 49,
+   "label": "HSBC Main\nBuilding",
+   "name": "HSBC Main Building",
+   "year": "1985",
+   "meta": "Hong Kong · 1985 · Foster Associates, Arup",
+   "alts": []
+  }
+ ],
+ "edges": [
+  {
+   "id": "e1",
+   "a": "BM",
+   "b": "ib1",
+   "k": "tr",
+   "l": "array grid",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e2",
+   "a": "ib1",
+   "b": "cs1",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e3",
+   "a": "BM",
+   "b": "ib2",
+   "k": "tr",
+   "l": "add struts",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e4",
+   "a": "ib2",
+   "b": "cs2",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e5",
+   "a": "TR",
+   "b": "ib3",
+   "k": "tr",
+   "l": "rotate radial",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e6",
+   "a": "ib3",
+   "b": "cs3",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e7",
+   "a": "TR",
+   "b": "ib4",
+   "k": "tr",
+   "l": "rotate 90° + taper",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e8",
+   "a": "ib4",
+   "b": "cs4",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e9",
+   "a": "TR",
+   "b": "ib5",
+   "k": "tr",
+   "l": "rotate 90° + wrap",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e10",
+   "a": "ib5",
+   "b": "cs5",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e11",
+   "a": "TR",
+   "b": "ib6",
+   "k": "tr",
+   "l": "array 3D",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e12",
+   "a": "ib6",
+   "b": "cs6",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e13",
+   "a": "FR",
+   "b": "ib7",
+   "k": "tr",
+   "l": "array portals",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e14",
+   "a": "ib7",
+   "b": "cs7",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e15",
+   "a": "FR",
+   "b": "ib8",
+   "k": "tr",
+   "l": "rotate (tube)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e16",
+   "a": "ib8",
+   "b": "cs8",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e17",
+   "a": "FR",
+   "b": "ib9",
+   "k": "tr",
+   "l": "loop",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e18",
+   "a": "ib9",
+   "b": "cs9",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e19",
+   "a": "FR",
+   "b": "ib10",
+   "k": "tr",
+   "l": "stack 3D",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e20",
+   "a": "ib10",
+   "b": "cs10",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e21",
+   "a": "AR",
+   "b": "ib11",
+   "k": "tr",
+   "l": "array tiers",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e22",
+   "a": "ib11",
+   "b": "cs11",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e23",
+   "a": "AR",
+   "b": "ib12",
+   "k": "tr",
+   "l": "add truss",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e24",
+   "a": "ib12",
+   "b": "cs12",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e25",
+   "a": "AR",
+   "b": "ib13",
+   "k": "tr",
+   "l": "rotate radial",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e26",
+   "a": "ib13",
+   "b": "cs13",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e27",
+   "a": "AR",
+   "b": "ib14",
+   "k": "tr",
+   "l": "rotate + trim",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e28",
+   "a": "ib14",
+   "b": "cs14",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e29",
+   "a": "AR",
+   "b": "ib15",
+   "k": "tr",
+   "l": "rotate (hypar)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e30",
+   "a": "ib15",
+   "b": "cs15",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e31",
+   "a": "PA",
+   "b": "ib16",
+   "k": "tr",
+   "l": "scale (tall)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e32",
+   "a": "ib16",
+   "b": "cs16",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e33",
+   "a": "PA",
+   "b": "ib17",
+   "k": "tr",
+   "l": "array",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e34",
+   "a": "ib17",
+   "b": "cs17",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e35",
+   "a": "PA",
+   "b": "ib18",
+   "k": "tr",
+   "l": "translate (surface)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e36",
+   "a": "ib18",
+   "b": "cs18",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e37",
+   "a": "PA",
+   "b": "ib19",
+   "k": "tr",
+   "l": "add branches",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e38",
+   "a": "ib19",
+   "b": "cs19",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e39",
+   "a": "PA",
+   "b": "ib20",
+   "k": "tr",
+   "l": "array grid",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e40",
+   "a": "ib20",
+   "b": "cs20",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e41",
+   "a": "AC",
+   "b": "ib21",
+   "k": "tr",
+   "l": "array arches",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e42",
+   "a": "ib21",
+   "b": "cs21",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e43",
+   "a": "AC",
+   "b": "ib22",
+   "k": "tr",
+   "l": "rotate + net",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e44",
+   "a": "ib22",
+   "b": "cs22",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e45",
+   "a": "AC",
+   "b": "ib23",
+   "k": "tr",
+   "l": "radial + split struts",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e46",
+   "a": "ib23",
+   "b": "cs23",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e47",
+   "a": "AC",
+   "b": "ib24",
+   "k": "tr",
+   "l": "split struts + stack",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e48",
+   "a": "ib24",
+   "b": "cs24",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e49",
+   "a": "CT",
+   "b": "ib25",
+   "k": "tr",
+   "l": "array + prestress",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e50",
+   "a": "ib25",
+   "b": "cs25",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e51",
+   "a": "CT",
+   "b": "ib26",
+   "k": "tr",
+   "l": "translate (net)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e52",
+   "a": "ib26",
+   "b": "cs26",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e53",
+   "a": "CT",
+   "b": "ib27",
+   "k": "tr",
+   "l": "rotate radial",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e54",
+   "a": "ib27",
+   "b": "cs27",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e55",
+   "a": "PC",
+   "b": "ib28",
+   "k": "tr",
+   "l": "add hangers",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e56",
+   "a": "ib28",
+   "b": "cs28",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e57",
+   "a": "PC",
+   "b": "ib29",
+   "k": "tr",
+   "l": "translate (surface)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e58",
+   "a": "ib29",
+   "b": "cs29",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e59",
+   "a": "PC",
+   "b": "ib30",
+   "k": "tr",
+   "l": "extrude",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e60",
+   "a": "ib30",
+   "b": "cs30",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e61",
+   "a": "CB",
+   "b": "ib31",
+   "k": "tr",
+   "l": "array stays",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e62",
+   "a": "ib31",
+   "b": "cs31",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e63",
+   "a": "CB",
+   "b": "ib32",
+   "k": "tr",
+   "l": "rotate 90° (hang)",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e64",
+   "a": "ib32",
+   "b": "cs32",
+   "k": "mat",
+   "l": "Materialize",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.5
+  },
+  {
+   "id": "e65",
+   "a": "TA",
+   "b": "AC",
+   "k": "comb",
+   "l": "",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e66",
+   "a": "TC",
+   "b": "AC",
+   "k": "comb",
+   "l": "",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e67",
+   "a": "AC",
+   "b": "BM",
+   "k": "tr",
+   "l": "scale",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e68",
+   "a": "AC",
+   "b": "TR",
+   "k": "tr",
+   "l": "stack",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e69",
+   "a": "TR",
+   "b": "FR",
+   "k": "tr",
+   "l": "fix joints",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e70",
+   "a": "AC",
+   "b": "AR",
+   "k": "tr",
+   "l": "remove tie",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e71",
+   "a": "AR",
+   "b": "PA",
+   "k": "tr",
+   "l": "subdivide",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e72",
+   "a": "AC",
+   "b": "CT",
+   "k": "tr",
+   "l": "mirror",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e73",
+   "a": "AC",
+   "b": "CB",
+   "k": "tr",
+   "l": "remove arch",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  },
+  {
+   "id": "e74",
+   "a": "CB",
+   "b": "PC",
+   "k": "tr",
+   "l": "subdivide",
+   "ar": "none",
+   "bend": 0,
+   "lp": 0.55
+  }
+ ]
+}
