@@ -27,7 +27,7 @@ Each built-case photo in the graph, where it came from and its licence. Photos m
 | Gateway Arch | [Gateway Arch & St. Louis MO Riverfront at Dawn.jpg](https://commons.wikimedia.org/wiki/File:Gateway_Arch_%26_St._Louis_MO_Riverfront_at_Dawn.jpg) | Parker Botanical | CC BY-SA 3.0 | Miro board card |
 | Georgia Dome | [Georgia Dome, Atlanta, Georgia 2011.jpg](https://commons.wikimedia.org/wiki/File:Georgia_Dome,_Atlanta,_Georgia_2011.jpg) | Ken Lund | CC BY-SA 2.0 | Miro board card |
 | Golden Gate Bridge | [Golden Gate Bridge as seen from Battery East.jpg](https://commons.wikimedia.org/wiki/File:Golden_Gate_Bridge_as_seen_from_Battery_East.jpg) | Frank Schulenburg | CC BY-SA 4.0 | Miro board card |
-| Gottlieb-Daimler-Stadion roof | [Mercedes-Benz Arena (Gottlieb-Daimler-Stadion), Stuttgart - panoramio.jpg](https://commons.wikimedia.org/wiki/File:Mercedes-Benz_Arena_(Gottlieb-Daimler-Stadion),_Stuttgart_-_panoramio.jpg) | Qwesy | CC BY 3.0 | Wikimedia Commons, picked from search results |
+| Gottlieb-Daimler-Stadion roof | [Mercedes-Benz-Arena Stuttgart.JPG](https://commons.wikimedia.org/wiki/File:Mercedes-Benz-Arena_Stuttgart.JPG) | MSeses | CC BY-SA 3.0 | Wikimedia Commons, picked from search results |
 | Grande Arche | [Grande Arche, France - April 2011.jpg](https://commons.wikimedia.org/wiki/File:Grande_Arche,_France_-_April_2011.jpg) | Cristian Bortes from Cluj-Napoca, Romania | CC BY 2.0 | Wikimedia Commons, picked from search results |
 | Guangzhou International Finance Center | [GZIFC.jpg](https://commons.wikimedia.org/wiki/File:GZIFC.jpg) | 慕尼黑啤酒 | CC BY-SA 3.0 | Miro board card |
 | HSBC Main Building | [HK HSBC Main Building.jpg](https://commons.wikimedia.org/wiki/File:HK_HSBC_Main_Building.jpg) | Baycrest | CC BY-SA 2.5 | Miro board card |
@@ -45,7 +45,7 @@ Each built-case photo in the graph, where it came from and its licence. Photos m
 | Linked Hybrid | [Linked Hybrid (20200628142223).jpg](https://commons.wikimedia.org/wiki/File:Linked_Hybrid_(20200628142223).jpg) | N509FZ | CC BY-SA 4.0 | Miro board card |
 | Lupu Bridge | [Lupu Bridge, Huangpu River.JPG](https://commons.wikimedia.org/wiki/File:Lupu_Bridge,_Huangpu_River.JPG) | Glabb | CC BY-SA 3.0 | Miro board card |
 | Madison Square Garden | [Madison Square Garden (MSG) - Full (48124330357).jpg](https://commons.wikimedia.org/wiki/File:Madison_Square_Garden_(MSG)_-_Full_(48124330357).jpg) | Ajay Suresh from New York, NY, USA | CC BY 2.0 | Wikimedia Commons search |
-| Millau Viaduct | [Millau Viaduct (2724128971).jpg](https://commons.wikimedia.org/wiki/File:Millau_Viaduct_(2724128971).jpg) | Richard Leeming from London, UK | CC BY-SA 2.0 | Wikimedia Commons, picked from search results |
+| Millau Viaduct | [The Millau Viaduct (2714080736).jpg](https://commons.wikimedia.org/wiki/File:The_Millau_Viaduct_(2714080736).jpg) | FaceMePLS from The Hague, The Netherlands | CC BY 2.0 | Wikimedia Commons, picked from search results |
 | Montreal Biosphère | [Biosphere montreal.JPG](https://commons.wikimedia.org/wiki/File:Biosphere_montreal.JPG) | Philipp Hienstorfer | CC BY-SA 4.0 | Miro board card |
 | Multihalle Mannheim | [Multihalle07.jpg](https://commons.wikimedia.org/wiki/File:Multihalle07.jpg) | Hubert Berberich (HubiB) | CC BY 3.0 | Miro board card |
 | Munich Olympic Stadium | [Blick vom Olympiaberg auf das Olympiastadion.jpg](https://commons.wikimedia.org/wiki/File:Blick_vom_Olympiaberg_auf_das_Olympiastadion.jpg) | Amrei-Marie | CC BY-SA 4.0 | Wikimedia Commons, picked from search results |
