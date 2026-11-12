@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PHOTOS = ROOT / "photos"
 API = "https://commons.wikimedia.org/w/api.php"
 UA = "knowledge-graph-photo-fetch/1.0 (https://github.com/Starive/knowledge-graph)"
-WIDTH = 1400
+WIDTH = 640
 
 
 def get(url):
@@ -66,10 +66,14 @@ def by_file(name):
     return None
 
 
-def by_search(query):
+CANDIDATES = {}
+
+
+def by_search(query, case):
     d = api(dict(IIPROP, action="query", generator="search", gsrsearch=query + " filetype:bitmap",
-                 gsrnamespace="6", gsrlimit="10"))
+                 gsrnamespace="6", gsrlimit="12"))
     pages = sorted(d.get("query", {}).get("pages", []), key=lambda p: p.get("index", 99))
+    CANDIDATES[case] = [{"file": p["title"], "width": (p.get("imageinfo") or [{}])[0].get("width", 0)} for p in pages]
     for p in pages:
         ii = (p.get("imageinfo") or [{}])[0]
         if ii.get("mime") in ("image/jpeg", "image/png") and ii.get("width", 0) >= 800:
@@ -80,11 +84,14 @@ def by_search(query):
 def main():
     sources = json.loads((PHOTOS / "sources.json").read_text(encoding="utf-8"))
     manifest, missing = {}, []
+    for old in PHOTOS.glob("*"):
+        if old.suffix.lower() in (".jpg", ".png"):
+            old.unlink()
     for case, spec in sources.items():
         try:
             page = by_file(spec["file"]) if spec.get("file") else None
             if not page and spec.get("search"):
-                page = by_search(spec["search"])
+                page = by_search(spec["search"], case)
             if not page:
                 missing.append(case)
                 print(f"no photo: {case}")
@@ -101,7 +108,7 @@ def main():
                 "author": plain(md.get("Artist", {}).get("value"))[:160],
                 "license": plain(md.get("LicenseShortName", {}).get("value")),
                 "licenseUrl": md.get("LicenseUrl", {}).get("value", ""),
-                "from": spec.get("from", ""),
+                "from": spec.get("from", "") if not (spec.get("file") and page["title"].replace("File:", "").replace(" ", "_") != spec["file"].replace(" ", "_")) or not spec.get("search") else "Wikimedia Commons search",
             }
             print(f"ok: {case} <- {page['title']}")
         except Exception as e:  # keep going; report at the end
@@ -109,6 +116,7 @@ def main():
             print(f"failed: {case}: {e}", file=sys.stderr)
         time.sleep(0.4)
 
+    (PHOTOS / "candidates.json").write_text(json.dumps(CANDIDATES, ensure_ascii=False, indent=1), encoding="utf-8")
     (PHOTOS / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")
     lines = ["# Photo credits", "",
              "Each built-case photo in the graph, where it came from and its licence. "
