@@ -10,12 +10,12 @@
  },
  "Akashi Kaikyō Bridge": {
   "path": "photos/akashi-kaikyo-bridge.jpg",
-  "file": "File:Akashi Bridge.JPG",
-  "page": "https://commons.wikimedia.org/wiki/File:Akashi_Bridge.JPG",
-  "author": "Tysto",
-  "license": "Public domain",
-  "licenseUrl": "",
-  "from": "Wikimedia Commons search"
+  "file": "File:Akashi Kaikyō Bridge, 2004-08-27.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Akashi_Kaiky%C5%8D_Bridge,_2004-08-27.jpg",
+  "author": "Alankang",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Bank of China Tower": {
   "path": "photos/bank-of-china-tower.jpg",
@@ -28,12 +28,12 @@
  },
  "Beijing National Stadium": {
   "path": "photos/beijing-national-stadium.jpg",
-  "file": "File:Beijing national stadium.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:Beijing_national_stadium.jpg",
-  "author": "Peter23",
+  "file": "File:Beijing China Beijing-National-Stadium-01.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Beijing_China_Beijing-National-Stadium-01.jpg",
+  "author": "CEphoto, Uwe Aranas",
   "license": "CC BY-SA 3.0",
   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-  "from": "Wikimedia Commons search"
+  "from": "Miro board card"
  },
  "CCTV Headquarters": {
   "path": "photos/cctv-headquarters.jpg",
@@ -60,7 +60,7 @@
   "author": "Mikani",
   "license": "CC BY-SA 4.0",
   "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-  "from": "Wikimedia Commons search"
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Centre Pompidou": {
   "path": "photos/centre-pompidou.jpg",
@@ -82,21 +82,21 @@
  },
  "Church of Atlántida": {
   "path": "photos/church-of-atlantida.jpg",
-  "file": "File:Iglesia Atlántida Dieste 7.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:Iglesia_Atl%C3%A1ntida_Dieste_7.jpg",
-  "author": "Nicolas Barriola",
+  "file": "File:Iglesia Atlántida Dieste.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Iglesia_Atl%C3%A1ntida_Dieste.jpg",
+  "author": "Marcelo Bertolini",
   "license": "CC BY-SA 3.0",
   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-  "from": "Wikimedia Commons search"
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Church of Colònia Güell": {
   "path": "photos/church-of-colonia-guell.jpg",
-  "file": "File:Barcelona - Exterior of the Apse of the Sagrada Família - Western exposure.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:Barcelona_-_Exterior_of_the_Apse_of_the_Sagrada_Fam%C3%ADlia_-_Western_exposure.jpg",
-  "author": "Didier Descouens",
-  "license": "CC BY-SA 4.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-  "from": "Wikimedia Commons search"
+  "file": "File:Cripta de la Colònia Güell 1.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Cripta_de_la_Col%C3%B2nia_G%C3%BCell_1.jpg",
+  "author": "Till F. Teenck",
+  "license": "CC BY-SA 2.5",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Confederation Bridge": {
   "path": "photos/confederation-bridge.jpg",
@@ -208,21 +208,21 @@
  },
  "Gottlieb-Daimler-Stadion roof": {
   "path": "photos/gottlieb-daimler-stadion-roof.jpg",
-  "file": "File:Mercedes-Benz-Arena Stuttgart.JPG",
-  "page": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz-Arena_Stuttgart.JPG",
-  "author": "MSeses",
-  "license": "CC BY-SA 3.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-  "from": "Wikimedia Commons search"
+  "file": "File:Mercedes-Benz Arena (Gottlieb-Daimler-Stadion), Stuttgart - panoramio.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_Arena_(Gottlieb-Daimler-Stadion),_Stuttgart_-_panoramio.jpg",
+  "author": "Qwesy",
+  "license": "CC BY 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Grande Arche": {
   "path": "photos/grande-arche.jpg",
-  "file": "File:Panorama La Défense.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:Panorama_La_D%C3%A9fense.jpg",
-  "author": "Dimitri Destugues",
-  "license": "CC BY-SA 3.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-  "from": "Wikimedia Commons search"
+  "file": "File:Grande Arche, France - April 2011.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Grande_Arche,_France_-_April_2011.jpg",
+  "author": "Cristian Bortes from Cluj-Napoca, Romania",
+  "license": "CC BY 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Guangzhou International Finance Center": {
   "path": "photos/guangzhou-international-finance-center.jpg",
@@ -339,7 +339,7 @@
   "author": "IIVQ / Tijmen Stam",
   "license": "CC BY-SA 3.0",
   "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-  "from": "Wikimedia Commons search"
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Linked Hybrid": {
   "path": "photos/linked-hybrid.jpg",
@@ -370,12 +370,12 @@
  },
  "Millau Viaduct": {
   "path": "photos/millau-viaduct.jpg",
-  "file": "File:00 0237 Millau - Département Aveyron.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:00_0237_Millau_-_D%C3%A9partement_Aveyron.jpg",
-  "author": "W. Bulach",
-  "license": "CC BY-SA 4.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
-  "from": "Wikimedia Commons search"
+  "file": "File:Millau Viaduct (2724128971).jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Millau_Viaduct_(2724128971).jpg",
+  "author": "Richard Leeming from London, UK",
+  "license": "CC BY-SA 2.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Montreal Biosphère": {
   "path": "photos/montreal-biosphere.jpg",
@@ -397,12 +397,12 @@
  },
  "Munich Olympic Stadium": {
   "path": "photos/munich-olympic-stadium.jpg",
-  "file": "File:Olympiastadion at dusk.JPG",
-  "page": "https://commons.wikimedia.org/wiki/File:Olympiastadion_at_dusk.JPG",
-  "author": "Martin Falbisoner",
-  "license": "CC BY-SA 3.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
-  "from": "Wikimedia Commons search"
+  "file": "File:Blick vom Olympiaberg auf das Olympiastadion.jpg",
+  "page": "https://commons.wikimedia.org/wiki/File:Blick_vom_Olympiaberg_auf_das_Olympiastadion.jpg",
+  "author": "Amrei-Marie",
+  "license": "CC BY-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+  "from": "Wikimedia Commons, picked from search results"
  },
  "National Speed Skating Oval": {
   "path": "photos/national-speed-skating-oval.jpg",
@@ -539,15 +539,6 @@
   "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
   "from": "Wikimedia Commons search"
  },
- "Seoul Olympic Gymnastics Arena": {
-  "path": "photos/seoul-olympic-gymnastics-arena.jpg",
-  "file": "File:151206 펩시콘서트 동우 2.jpg",
-  "page": "https://commons.wikimedia.org/wiki/File:151206_%ED%8E%A9%EC%8B%9C%EC%BD%98%EC%84%9C%ED%8A%B8_%EB%8F%99%EC%9A%B0_2.jpg",
-  "author": "sunshinedw",
-  "license": "CC BY 4.0",
-  "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
-  "from": "Wikimedia Commons search"
- },
  "Shanghai Pudong Airport T1": {
   "path": "photos/shanghai-pudong-airport-t1.jpg",
   "file": "File:Shanghai Pudong International Airport Interior.jpg",
@@ -645,7 +636,7 @@
   "author": "Doug Kerr",
   "license": "CC BY-SA 2.0",
   "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
-  "from": "Wikimedia Commons search"
+  "from": "Wikimedia Commons, picked from search results"
  },
  "Yamanashi Press and Broadcasting Centre": {
   "path": "photos/yamanashi-press-and-broadcasting-centre.jpg",
